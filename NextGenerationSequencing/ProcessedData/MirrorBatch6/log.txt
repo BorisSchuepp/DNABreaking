@@ -1,0 +1,78 @@
+Starting analysis on 2024-05-15, 15:11:06, using no_mismatch_tolerance_distance 20, maxium_further_missmatches = 10 and gaussian_fit_window = 50.
+ATMi0_1: Number of raw single reads are 137655 (read 1) and 137655 (read 2).
+ATMi0_1: Number of raw paired reads found is 137655.
+ATMi0_1: Number of valid paired reads is 117058, which is 85.0 % of total.
+ATMi0_1: Lengths mean: 347.85, Standard deviation: 30.7.
+ATMi0_1: Mu: 352.51, Sigma: 3.87
+ATMi0_2: Number of raw single reads are 114658 (read 1) and 114658 (read 2).
+ATMi0_2: Number of raw paired reads found is 114658.
+ATMi0_2: Number of valid paired reads is 90545, which is 79.0 % of total.
+ATMi0_2: Lengths mean: 348.57, Standard deviation: 22.94.
+ATMi0_2: Mu: 353.53, Sigma: 4.83
+ATMi0_3: Number of raw single reads are 154272 (read 1) and 154272 (read 2).
+ATMi0_3: Number of raw paired reads found is 154272.
+ATMi0_3: Number of valid paired reads is 131299, which is 85.1 % of total.
+ATMi0_3: Lengths mean: 350.33, Standard deviation: 22.59.
+ATMi0_3: Mu: 353.01, Sigma: 4.31
+ATMi1_1: Number of raw single reads are 236430 (read 1) and 236430 (read 2).
+ATMi1_1: Number of raw paired reads found is 236430.
+ATMi1_1: Number of valid paired reads is 194844, which is 82.4 % of total.
+ATMi1_1: Lengths mean: 348.38, Standard deviation: 30.27.
+ATMi1_1: Mu: 352.87, Sigma: 4.82
+ATMi1_2: Number of raw single reads are 202808 (read 1) and 202808 (read 2).
+ATMi1_2: Number of raw paired reads found is 202808.
+ATMi1_2: Number of valid paired reads is 153125, which is 75.5 % of total.
+ATMi1_2: Lengths mean: 349.76, Standard deviation: 22.36.
+ATMi1_2: Mu: 352.87, Sigma: 4.73
+ATMi1_3: Number of raw single reads are 205287 (read 1) and 205287 (read 2).
+ATMi1_3: Number of raw paired reads found is 205287.
+ATMi1_3: Number of valid paired reads is 165563, which is 80.6 % of total.
+ATMi1_3: Lengths mean: 344.56, Standard deviation: 39.18.
+ATMi1_3: Mu: 352.92, Sigma: 5.35
+ATMi2_1: Number of raw single reads are 214276 (read 1) and 214276 (read 2).
+ATMi2_1: Number of raw paired reads found is 214276.
+ATMi2_1: Number of valid paired reads is 175823, which is 82.1 % of total.
+ATMi2_1: Lengths mean: 345.6, Standard deviation: 30.19.
+ATMi2_1: Mu: 353.28, Sigma: 5.42
+ATMi2_2: Number of raw single reads are 158997 (read 1) and 158997 (read 2).
+ATMi2_2: Number of raw paired reads found is 158997.
+ATMi2_2: Number of valid paired reads is 130285, which is 81.9 % of total.
+ATMi2_2: Lengths mean: 346.64, Standard deviation: 28.95.
+ATMi2_2: Mu: 352.93, Sigma: 5.32
+ATMi2_3: Number of raw single reads are 134203 (read 1) and 134203 (read 2).
+ATMi2_3: Number of raw paired reads found is 134203.
+ATMi2_3: Number of valid paired reads is 108430, which is 80.8 % of total.
+ATMi2_3: Lengths mean: 347.45, Standard deviation: 28.57.
+ATMi2_3: Mu: 352.64, Sigma: 5.4
+ATMi3_1: Number of raw single reads are 164656 (read 1) and 164656 (read 2).
+ATMi3_1: Number of raw paired reads found is 164656.
+ATMi3_1: Number of valid paired reads is 123051, which is 74.7 % of total.
+ATMi3_1: Lengths mean: 344.33, Standard deviation: 34.27.
+ATMi3_1: Mu: 352.81, Sigma: 6.12
+ATMi3_2: Number of raw single reads are 181051 (read 1) and 181051 (read 2).
+ATMi3_2: Number of raw paired reads found is 181051.
+ATMi3_2: Number of valid paired reads is 146163, which is 80.7 % of total.
+ATMi3_2: Lengths mean: 346.05, Standard deviation: 28.39.
+ATMi3_2: Mu: 352.99, Sigma: 6.03
+ATMi3_3: Number of raw single reads are 167758 (read 1) and 167758 (read 2).
+ATMi3_3: Number of raw paired reads found is 167758.
+ATMi3_3: Number of valid paired reads is 135725, which is 80.9 % of total.
+ATMi3_3: Lengths mean: 341.25, Standard deviation: 43.67.
+ATMi3_3: Mu: 351.83, Sigma: 5.6
+ATMi4_1: Number of raw single reads are 135125 (read 1) and 135125 (read 2).
+ATMi4_1: Number of raw paired reads found is 135125.
+ATMi4_1: Number of valid paired reads is 110473, which is 81.8 % of total.
+ATMi4_1: Lengths mean: 348.85, Standard deviation: 26.37.
+ATMi4_1: Mu: 352.21, Sigma: 5.39
+ATMi4_2: Number of raw single reads are 167318 (read 1) and 167318 (read 2).
+ATMi4_2: Number of raw paired reads found is 167318.
+ATMi4_2: Number of valid paired reads is 130382, which is 77.9 % of total.
+ATMi4_2: Lengths mean: 347.21, Standard deviation: 26.58.
+ATMi4_2: Mu: 352.76, Sigma: 5.57
+ATMi4_3: Number of raw single reads are 166051 (read 1) and 166051 (read 2).
+ATMi4_3: Number of raw paired reads found is 166051.
+ATMi4_3: Number of valid paired reads is 136558, which is 82.2 % of total.
+ATMi4_3: Lengths mean: 345.88, Standard deviation: 32.01.
+ATMi4_3: Mu: 352.51, Sigma: 5.57
+Finished analysis at 2024-05-15, 15:17:21. Might take a moment to generate graphics.
+Total time: 06:15

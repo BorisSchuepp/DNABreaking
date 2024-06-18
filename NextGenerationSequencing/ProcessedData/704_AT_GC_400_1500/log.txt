@@ -1,0 +1,22 @@
+Starting analysis on 2024-04-04, 22:52:10, using no_mismatch_tolerance_distance 20, maxium_further_missmatches = 10 and gaussian_fit_window = 50.
+AT_1: Number of raw single reads are 210632 (read 1) and 210632 (read 2).
+AT_1: Number of raw paired reads found is 210632.
+AT_1: Number of valid paired reads is 181938, which is 86.4 % of total.
+AT_1: Lengths mean: 341.75, Standard deviation: 42.05.
+AT_1: Mu: 352.38, Sigma: 7.42
+AT_2: Number of raw single reads are 184175 (read 1) and 184175 (read 2).
+AT_2: Number of raw paired reads found is 184175.
+AT_2: Number of valid paired reads is 157185, which is 85.3 % of total.
+AT_2: Lengths mean: 331.15, Standard deviation: 58.38.
+AT_2: Mu: 352.19, Sigma: 7.25
+AT_3: Number of raw single reads are 192479 (read 1) and 192479 (read 2).
+AT_3: Number of raw paired reads found is 192479.
+AT_3: Number of valid paired reads is 166359, which is 86.4 % of total.
+AT_3: Lengths mean: 342.54, Standard deviation: 40.41.
+AT_3: Mu: 352.34, Sigma: 7.46
+GC_1: Number of raw single reads are 138383 (read 1) and 138383 (read 2).
+GC_1: Number of raw paired reads found is 138383.
+GC_1: Number of valid paired reads is 105633, which is 76.3 % of total.
+GC_1: Lengths mean: 338.98, Standard deviation: 49.3.
+GC_1: Mu: 354.07, Sigma: 6.0
+GC_2: Number of raw single reads are 191412 (read 1) and 191412 (read 2).

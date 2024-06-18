@@ -1,0 +1,49 @@
+;
+;	File 'AAT_1.top' was generated
+;	By user: schuepbs (7139)
+;	On host: rh06326.villa-bosch.de
+;	At date: Sat Feb 17 00:35:37 2024
+;
+;	This is a standalone topology file
+;
+;	Created by:
+;	            :-) GROMACS - gmx pdb2gmx, 2021.4-Ubuntu-2021.4-2 (-:
+;	
+;	Executable:   /usr/bin/gmx
+;	Data prefix:  /usr
+;	Working dir:  /hits/fast/mbm/schuepbs/DNANickSequences/Simulations/WithNick/Test
+;	Command line:
+;	  gmx pdb2gmx -f AAT100_modified.pdb -o AAT_1.gro -p AAT_1.top -i AAT_1.itp
+;	Force field was read from current directory or a relative path - path added.
+;
+
+; Include forcefield parameters
+#include "./amber14sb_OL21.ff/forcefield.itp"
+
+; Include chain topologies
+#include "AAT_1_DNA_chain_A.itp"
+#include "AAT_1_DNA_chain_B.itp"
+#include "AAT_1_DNA_chain_C.itp"
+
+; Include water topology
+#include "./amber14sb_OL21.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "./amber14sb_OL21.ff/ions.itp"
+
+[ system ]
+; Name
+Protein
+
+[ molecules ]
+; Compound        #mols
+DNA_chain_A         1
+DNA_chain_B         1
+DNA_chain_C         1
