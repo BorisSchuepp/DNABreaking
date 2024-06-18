@@ -23,7 +23,7 @@ def determine_stars(pvalue_in):
 
 # Data read-in and preparation #
 data_output = "../ProcessedData/MirrorStatistics/"
-data_directory = "../ProcessedData/704_AT_GC_400_1500/"
+data_directory = "../ProcessedData/704_AT_GC_400_1500_ATMi/"
 data_directory = "../ProcessedData/Hairpin/"
 data_directory = "../ProcessedData/MirrorBatch6/"
 graphics_output = "../Graphics/MirrorStatistics/"

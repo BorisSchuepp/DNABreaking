@@ -1,0 +1,1 @@
+**Please copy the .fastq files from Zenodo into this directory in order to use the code!** 
