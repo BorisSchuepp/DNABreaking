@@ -191,5 +191,7 @@ def print_p_matrix(p_matrix_in, names_in, output_file_name_in, output_dir_in):
 
 
 if __name__ == '__main__':
-    # Might be used to read and write data from various files created in FilteringAlgorithm.py
-    pass
+    sample = "ATMi4"
+    fig_num = "57"
+    data = read_breaking_results([f"{sample}_1_Breaking_Dist_Norm.csv", f"{sample}_2_Breaking_Dist_Norm.csv", f"{sample}_3_Breaking_Dist_Norm.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/")
+    print_breaking(data, False, f"FigS{fig_num}.csv", f"C:/Users/Boris/Desktop/Data/Supplement/NEW/FigS{fig_num}/")

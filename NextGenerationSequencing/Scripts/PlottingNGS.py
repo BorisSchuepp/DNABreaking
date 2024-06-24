@@ -11,7 +11,7 @@ class PlottingNGS:
 
     def __init__(self):
         self.font_size = 20
-        self.font = "Arial"
+        self.font = "Roboto"
         self.font_weight = "bold"
         self.marker_size = 400
         self.colors = {"AT": (0.9450980392156862, 0.7019607843137254, 0.25882352941176473, 1.0),
@@ -27,17 +27,18 @@ class PlottingNGS:
                        "HP1": "orange",
                        "HP2": "red",
                        "ATMi0": (1, 0, 0, 1),
-                       "ATMi1": (1, 0.5, 0, 1),
-                       "ATMi2" : (1, 1, 0, 1),
-                       "ATMi3" : (0.5, 1, 0, 1),
-                       "ATMi4" : (0, 1, 0, 1) 
+                       "ATMi1": (1, 0.25, 0, 1),
+                       "ATMi2": (1, 0.5, 0, 1),
+                       "ATMi3": (1, 0.75, 0, 1),
+                       "ATMi4": (1, 1, 0, 1)
                        }
         plt.rcParams['mathtext.fontset'] = 'custom'
         plt.rcParams['mathtext.it'] = f'{self.font}:italic'
         plt.rcParams['mathtext.bf'] = f'{self.font}:italic:bold'
         plt.rcParams['axes.linewidth'] = 2
 
-    def get_complementary_strand(self, strand_in):
+    @staticmethod
+    def get_complementary_strand(strand_in):
         complement_35 = ""
         for base in strand_in:
             if base == "A":
@@ -50,6 +51,7 @@ class PlottingNGS:
                 complement_35 += "G"
         complement_53 = complement_35[::-1]
         return complement_53
+
     # Plot the filtering results, optionally provide a directory where the graphics are saved to
     def plot_filtering_results(self, file_names_in, directory_in, save_path=None):
         filtering_results_dict = DataUtilities.read_filtering_results(file_names_in, directory_in)
@@ -78,7 +80,7 @@ class PlottingNGS:
         plt.legend(prop=legend_properties)
 
         x_tick_list = [0.5 + 2 * i for i in range(0, len(filtering_results_dict.keys()))]
-        plt.xticks(x_tick_list, list(filtering_results_dict.keys()),
+        plt.xticks(x_tick_list, [i.split("_")[0] + "*" + " Sample " + i.split("_")[1] for i in list(filtering_results_dict.keys())],
                    font=self.font, size=self.font_size, weight=self.font_weight)
 
         ax = plt.gca()
@@ -165,7 +167,11 @@ class PlottingNGS:
             cur_sample = basecount_results[sample_name]
             current_x = sorted(list(cur_sample.keys()))
             current_y = [cur_sample[i] for i in current_x]
-            plt.plot(current_x, current_y, label=sample_name, linewidth=2.5)
+            if sample_name.find("_") != -1:
+                label = sample_name.split("_")[0] + "*" + " Sample " + sample_name.split("_")[1]
+            else:
+                label = sample_name
+            plt.plot(current_x, current_y, label=label, linewidth=2.5)
             plt.xlim(current_x[0], current_x[-1])
             x_max = current_x[-1]
 
@@ -193,17 +199,20 @@ class PlottingNGS:
             plt.show()
             plt.clf()
         plt.close()
-    
+
     def plot_single_breaking_bases(self, breaking_data, lims, save_path=None):
         plt.figure(figsize=(9, 9))
 
-        for color, base_values, base in zip(["blue", "red", "orange", "green"], [breaking_data[i] for i in breaking_data.keys()], list(breaking_data.keys()) ):
+        for color, base_values, base in zip(["blue", "red", "orange", "green"],
+                                            [breaking_data[i] for i in breaking_data.keys()],
+                                            list(breaking_data.keys())):
             plt.bar([x[0] for x in base_values], [y[1] for y in base_values], color=color, label=base)
-        
-        plt.xlim(lims[0],lims[1])
-        plt.ylim(0,2)
-        plt.xlabel("Fragment break index $\\mathbf{j}$", size=self.font_size + 10, font=self.font, weight=self.font_weight)
-        plt.ylabel("Relative breaking rate",  size=self.font_size + 10, font=self.font, weight=self.font_weight)
+
+        plt.xlim(lims[0], lims[1])
+        plt.ylim(0, 2)
+        plt.xlabel("Fragment break index $\\mathbf{j}$", size=self.font_size + 10, font=self.font,
+                   weight=self.font_weight)
+        plt.ylabel("Relative breaking rate", size=self.font_size + 10, font=self.font, weight=self.font_weight)
         legend_properties = {'weight': self.font_weight, 'family': self.font, 'size': f"{self.font_size - 5}"}
         plt.legend(prop=legend_properties)
         plt.axhline(1, color='black', linewidth=2.5)
@@ -219,8 +228,8 @@ class PlottingNGS:
         plt.close()
 
     def plot_single_breaking_data(self, breaking_data, top, gauss, shift, average, centroid=352,
-                             color=(0, 0, 0, 1),
-                             save_path=None):
+                                  color=(0, 0, 0, 1),
+                                  save_path=None):
         # Select desired subset
         data = []
         data_er = []
@@ -239,7 +248,7 @@ class PlottingNGS:
             data = [breaking_data[i] for i in breaking_data.keys() if i.find("BOT") != -1][0]
         if len(data) == 0:
             print("Data is not correct, please try again")
-        data = {i:data[i] for i in data.keys() if data[i]!=0}
+        data = {i: data[i] for i in data.keys() if data[i] != 0}
         plt.figure(figsize=(9, 9))
         x_data = list(data.keys())
         y_data = [data[i] for i in x_data]
@@ -253,7 +262,7 @@ class PlottingNGS:
             plt.bar(x_data, y_data, yerr=[data_er[i] for i in x_data], capsize=5, color=color,
                     edgecolor='black', error_kw={'ecolor': self.colors["BlackOpaque"]})
         else:
-            plt.bar(x_data, y_data, color="blue")#, edgecolor="black")
+            plt.bar(x_data, y_data, color="blue")  # , edgecolor="black")
 
         if gauss == 0:
             pass
@@ -262,7 +271,8 @@ class PlottingNGS:
             plt.plot(x_gauss, y_gauss, color="red", linewidth=3.5)
         else:
             mu_1, sigma_1, a_1, mu_2, sigma_2, a_2, x_gauss, y_gauss = Fitting.fit_bimodal(data, True)
-            print("Mu left:", mu_1, "Sigma left:", sigma_1, "Mu right:", mu_2, "Sigma right:", sigma_2, "Left to right ratio:", a_1/a_2)
+            print("Mu left:", mu_1, "Sigma left:", sigma_1, "Mu right:", mu_2, "Sigma right:", sigma_2,
+                  "Left to right ratio:", a_1 / a_2)
             plt.plot(x_gauss, y_gauss, color="red", linewidth=3.5)
 
         plt.ylabel("Fraction of reads", size=self.font_size + 10, font=self.font, weight=self.font_weight)
@@ -283,9 +293,9 @@ class PlottingNGS:
 
         plt.xlim(min(x_data), max(x_data))
         if not shift:
-            x_ticks = [i for i in range(int(min(x_data)), int(max(x_data))) if i % 50 == centroid % 50]
-            x_tick_labels = [str(round(float(i))) for i in x_ticks]
-            #x_tick_labels[x_tick_labels.index((str(float(centroid))))] = str(centroid) + "*"
+            x_ticks = [i for i in range(int(min(x_data)), int(max(x_data))) if i % 5 == centroid % 5]
+            x_tick_labels = [str(round(int(i))) for i in x_ticks]
+            # x_tick_labels[x_tick_labels.index((str(float(centroid))))] = str(centroid) + "*"
             plt.xticks(x_ticks, x_tick_labels, weight=self.font_weight, fontname=self.font, size=self.font_size)
         else:
             x_ticks = [i for i in range(int(min(x_data)), int(max(x_data))) if i % 10 == 0]
@@ -307,9 +317,6 @@ class PlottingNGS:
             plt.show()
             plt.clf()
         plt.close()
-
-
-    
 
     # Plot a single breaking diagram, provide if it is on the upper strand (the one provided in the configuration) via
     # parameter top, provide if a Gaussian fit should be performed (gauss), if you want to display a shilfed coordinate
@@ -343,7 +350,7 @@ class PlottingNGS:
         for i in range(0, 3):
             axis = axs[i]
             plt.sca(axis)
-            plt.yticks(weight="bold", fontname=self.font, size=self.font_size)
+            plt.yticks(weight="bold", fontname=self.font, size=self.font_size-5)
             plt.tick_params(width=2)
 
             fraction_of_reads = list(data[i].values())
@@ -362,15 +369,15 @@ class PlottingNGS:
             axis.set_xlim(min(base_indices), max(base_indices))
 
             x_ticks = [i for i in range(int(min(base_indices)), int(max(base_indices))) if i % 10 == centroid % 10]
-            x_tick_labels = [str(float(i)) for i in x_ticks]
-            x_tick_labels[x_tick_labels.index((str(centroid)))] = str(centroid) + "*"
-            plt.xticks(x_ticks, x_tick_labels, weight='bold', fontname=self.font, size=self.font_size)
+            x_tick_labels = [str(int(i)) for i in x_ticks]
+            x_tick_labels[x_tick_labels.index((str(int(centroid))))] = str(int(centroid)) + "*"
+            plt.xticks(x_ticks, x_tick_labels, weight='bold', fontname=self.font, size=self.font_size-5)
 
             axis.set_ylim(0, total_max + 0.005)
 
             if gauss:
                 mu, sigma, x_gauss, y_gauss = Fitting.fit_gauss(data[i], True)
-                plt.plot(x_gauss, y_gauss, color="black", linewidth=2.5)
+                plt.plot(x_gauss, y_gauss, color="red", linewidth=2.5)
         plt.tight_layout()
 
         if save_path:
@@ -385,7 +392,6 @@ class PlottingNGS:
     def plot_fit_paramameter_scatter_single(self, file_names_in, directory_in, parameter_name, save_path=None):
 
         fit_parameters = DataUtilities.read_fit_parameters(file_names_in, directory_in)
-        print(fit_parameters, file_names_in)
         num_of_samples = len(list(fit_parameters.keys()))
         positions = range(1, num_of_samples + 1)
 
@@ -399,7 +405,6 @@ class PlottingNGS:
                 current_color = 'black'
             for sample_num in fit_parameters[sample].keys():
                 if fit_parameters[sample][sample_num] == -100 or fit_parameters[sample][sample_num] == 0.0:
-                    print("Ignoring one.")
                     continue
                 if sample_num != "Average":
                     plt.scatter(position, fit_parameters[sample][sample_num], alpha=0.5, color=current_color,
@@ -407,11 +412,16 @@ class PlottingNGS:
                 else:
                     plt.scatter(position, fit_parameters[sample][sample_num], alpha=1, color=current_color,
                                 marker="*", s=self.marker_size, edgecolor='black', linewidth=1.5)
-        plt.xticks(positions, [i.strip("*") + "" for i in fit_parameters.keys()], weight=self.font_weight,
-                   fontname=self.font, size=self.font_size)
+        if len(list(fit_parameters.keys())) <= 5:
+            plt.xticks(positions, [i.strip("*") + "*" for i in fit_parameters.keys()], weight=self.font_weight,
+                       fontname=self.font, size=self.font_size)
+        else:
+            plt.xticks(positions, [i.strip("*") + "*" for i in fit_parameters.keys()], weight=self.font_weight,
+                       fontname=self.font, size=self.font_size-10)
 
         if parameter_name == "Mu":
-            plt.yticks([-1.0, -0.5, 0, 0.5, 1.0], ["-1.0", "-0.5", "0", "0.5", "1.0"], weight=self.font_weight, fontname=self.font, size=self.font_size)
+            plt.yticks([-1.0, -0.5, 0, 0.5, 1.0], ["-1.0", "-0.5", "0", "0.5", "1.0"], weight=self.font_weight,
+                       fontname=self.font, size=self.font_size)
             plt.ylabel("$\\mathbf{\\mu}$ difference from center position", weight=self.font_weight, fontname=self.font,
                        size=self.font_size + 10)
         elif parameter_name == "Sigma":
@@ -420,11 +430,83 @@ class PlottingNGS:
 
             total_min = min([min(fit_parameters[i].values()) for i in fit_parameters.keys()])
             total_max = max([max(fit_parameters[i].values()) for i in fit_parameters.keys()])
-            # y_ticks = [i for i in range(int(round(total_min, 0)), int(round(total_max, 0)) + 1)]
-            y_ticks = [4, 4.5, 5, 5.5, 6]
-            plt.yticks(y_ticks, [str((i)) for i in y_ticks],
+            y_ticks = [i for i in range(int(round(total_min, 0)), int(round(total_max, 0)) + 1)]
+            # y_ticks = [4, 4.5, 5, 5.5, 6]
+            plt.yticks(y_ticks, [str(i) for i in y_ticks],
                        font=self.font, size=self.font_size, weight=self.font_weight)
         plt.tick_params(width=2)
+
+        plt.xlabel("Sample", weight=self.font_weight, fontname=self.font,
+                   size=self.font_size + 10)
+        plt.tight_layout()
+
+        if save_path:
+            plt.savefig(save_path)
+        else:
+            plt.show()
+            plt.clf()
+        plt.close()
+
+        # Create a scatter plot of Gaussian fit parameter, provide the input files and directory and the name of the
+        # parameter as a string ("Mu" or "Sigma"). Optionally provide a path to save the figure to.
+
+    def plot_fit_paramameter_scatter_single_fit(self, file_names_in, directory_in, parameter_name, save_path=None):
+
+        fit_parameters = DataUtilities.read_fit_parameters(file_names_in, directory_in)
+        num_of_samples = len(list(fit_parameters.keys()))
+        positions = range(1, num_of_samples + 1)
+
+        plt.figure(figsize=(7, 7))
+
+        for sample, position in zip(fit_parameters.keys(), positions):
+            sample_id = sample.strip("*")
+            if sample_id in self.colors.keys():
+                current_color = self.colors[sample_id]
+            else:
+                current_color = 'black'
+            for sample_num in fit_parameters[sample].keys():
+                if fit_parameters[sample][sample_num] == -100 or fit_parameters[sample][sample_num] == 0.0:
+                    continue
+                if sample_num != "Average":
+                    plt.scatter(position, fit_parameters[sample][sample_num], alpha=0.5, color=current_color,
+                                marker="o", s=self.marker_size, edgecolor='black', linewidth=1.5)
+                else:
+                    plt.scatter(position, fit_parameters[sample][sample_num], alpha=1, color=current_color,
+                                marker="*", s=self.marker_size, edgecolor='black', linewidth=1.5)
+        if len(list(fit_parameters.keys())) <= 5:
+            plt.xticks(positions, [i.strip("*") + "*" for i in fit_parameters.keys()], weight=self.font_weight,
+                       fontname=self.font, size=self.font_size)
+        else:
+            plt.xticks(positions, [i.strip("*") + "*" for i in fit_parameters.keys()], weight=self.font_weight,
+                       fontname=self.font, size=self.font_size - 10)
+
+        x = [0, 1, 2, 3]
+        y = [fit_parameters[sample]["Average"] for sample in fit_parameters.keys() if sample != "ATMi4"]
+        if parameter_name == "Sigma":
+            m, b, r2, new_x, new_y = Fitting.fit_linear(x, y, True)
+            print("Linear fit with m*x+b, m = ", round(m, 2), " and b = ", round(b, 2), " with R^2 = ", round(r2, 3))
+            plt.plot(new_x, new_y, linestyle='--', color="black", linewidth=2.5,
+                     label=str(round(m, 2)) + "$\\mathbf{\\cdot x +}$" + str(round(b, 2)) + ", with " + "$\\mathbf{R^2} =$" + " " + str(round(r2, 3)))
+
+        if parameter_name == "Mu":
+            plt.yticks([-1.0, -0.5, 0, 0.5, 1.0], ["-1.0", "-0.5", "0", "0.5", "1.0"], weight=self.font_weight,
+                       fontname=self.font, size=self.font_size)
+            plt.ylabel("$\\mathbf{\\mu}$ difference from center position", weight=self.font_weight, fontname=self.font,
+                       size=self.font_size + 10)
+        elif parameter_name == "Sigma":
+            plt.ylabel("Breaking distribution width $\\mathbf{\\sigma}$", weight=self.font_weight, fontname=self.font,
+                       size=self.font_size + 10)
+            # total_min = min([min(fit_parameters[i].values()) for i in fit_parameters.keys()])
+            # total_max = max([max(fit_parameters[i].values()) for i in fit_parameters.keys()])
+            # y_ticks = [i for i in range(int(round(total_min, 0)), int(round(total_max, 0)) + 1)]
+            y_ticks = [4, 4.5, 5, 5.5, 6, 6.5]
+            plt.yticks(y_ticks, [str(i) for i in y_ticks],
+                       font=self.font, size=self.font_size, weight=self.font_weight)
+        plt.tick_params(width=2)
+        plt.xlabel("Sample", weight=self.font_weight, fontname=self.font,
+                   size=self.font_size + 10)
+        legend_properties = {'weight': self.font_weight, 'family': self.font, 'size': f"{self.font_size - 5}"}
+        plt.legend(prop=legend_properties)
         plt.tight_layout()
 
         if save_path:
@@ -438,7 +520,6 @@ class PlottingNGS:
     # name of the parameter as a string ("Mu" or "Sigma"). Optionally provide a path to save the figure to.
     def plot_fit_paramameter_scatter_double(self, file_names_in, directory_in, parameter_name, save_path=None):
         all_values_dict = DataUtilities.read_fit_parameters(file_names_in, directory_in)
-
         gaussian_values = {}
         raw_values = {}
         for sample in all_values_dict.keys():
@@ -446,6 +527,7 @@ class PlottingNGS:
                 gaussian_values[sample.split(" ")[0]] = all_values_dict[sample]
             if sample.find("data") != -1:
                 raw_values[sample.split(" ")[0]] = all_values_dict[sample]
+        print(raw_values)
 
         fit_parameters_all = [gaussian_values, raw_values]
         fig, axs = plt.subplots(1, 2, figsize=(14, 7))  # Adjust figsize as needed
@@ -454,8 +536,8 @@ class PlottingNGS:
             current_ax = axs[i]
             num_of_samples = len(list(fit_parameters.keys()))
             positions = range(1, num_of_samples + 1)
-
-            for sample, position in zip(fit_parameters.keys(), positions):
+            namespace = fit_parameters.keys() #["400", "1500", "704", "GC", "AT"]
+            for sample, position in zip(namespace, positions):
                 sample_id = sample.strip("*")
                 if sample_id in self.colors.keys():
                     current_color = self.colors[sample_id]
@@ -468,7 +550,7 @@ class PlottingNGS:
                     else:
                         current_ax.scatter(position, fit_parameters[sample][sample_num], alpha=1, color=current_color,
                                            marker="*", s=self.marker_size, edgecolor='black', linewidth=1.5)
-            current_ax.set_xticks(positions, [i.strip("*") + "*" for i in fit_parameters.keys()],
+            current_ax.set_xticks(positions, [i.strip("*") + "*" for i in namespace],
                                   weight=self.font_weight,
                                   fontname=self.font, size=self.font_size)
 
@@ -543,10 +625,10 @@ class PlottingNGS:
             ax.plot(x_gauss, y_gauss, color="black", linewidth=2.5)
             shift -= 0.03
 
-            ax.set_ylim(-0.03)
+            ax.set_ylim(0)
         ax.set_xlim(left=-40, right=40)
 
-        ax.axvline(x=0, color='black', linestyle='--', linewidth=2.5)
+        ax.axvline(x=0, color='red', linestyle='--', linewidth=2.5)
 
         ax.yaxis.set_ticks([])
         ax.spines['top'].set_visible(True)
@@ -639,77 +721,23 @@ class PlottingNGS:
             plt.clf()
         plt.close()
 
-    def difference_from_fit(self, file_names_in, directory_in, top, average, sequence_in, bimodal=False):
-        breaking_data = DataUtilities.read_breaking_results(file_names_in, directory_in)
-        # Select desired subset
-        data = []
-        data_er = []
-        if top and average:
-            data = [breaking_data[i] for i in breaking_data.keys() if i.find("TOP") != -1 and i.find("AVERAGE") != -1][
-                0]
-            data_er = [breaking_data[i] for i in breaking_data.keys() if i.find("TOP") != -1 and i.find("STD") != -1][0]
-        if not top and average:
-            data = [breaking_data[i] for i in breaking_data.keys() if i.find("BOT") != -1 and i.find("AVERAGE") != -1][
-                0]
-            data_er = [breaking_data[i] for i in breaking_data.keys() if i.find("BOT") != -1 and i.find("STD") != -1][0]
-
-        if top and not average:
-            data = [breaking_data[i] for i in breaking_data.keys() if i.find("TOP") != -1][0]
-        if not top and not average:
-            data = [breaking_data[i] for i in breaking_data.keys() if i.find("BOT") != -1][0]
-        if len(data) == 0:
-            print("Data is not correct, please try again")
-
-        if bimodal:
-            mu_1, sigma_1, a_1, mu_2, sigma_2, a_2, x_gauss, y_gauss = Fitting.fit_bimodal(data, True)
-            x_data = list(data.keys())
-            y_data = [data[i] for i in x_data]
-
-            y_data_fit = [Fitting.bimodal(i, sigma_1, mu_1, a_1, sigma_2, mu_2, a_2) for i in x_data]
-        else:
-            mu, sigma, x_gauss, y_gauss = Fitting.fit_gauss(data, True)
-            print(mu, sigma)
-            x_data = list(data.keys())
-            y_data = [data[i] for i in x_data]
-
-            y_data_fit = [Fitting.gauss_function(i, sigma, mu) for i in x_data]
-
-        differences = y_data#[real_y - fit_y for real_y, fit_y in zip(y_data, y_data_fit)]
-        print(differences)
-        pairs = ["START"]
-        for i in range(0, len(sequence_in)-1):
-            pair = sequence_in[i:i+2]
-            pairs.append(pair)
-
-        pair_wise_differences = {}
-        for pair, difference in zip(pairs, differences):
-            if pair not in pair_wise_differences.keys():
-                pair_wise_differences[pair] = [1, difference]
-            else:
-                pair_wise_differences[pair][0] += 1
-                pair_wise_differences[pair][1] += difference
-
-        keys_sorted = ["AA", "AC", "AG", "AT", "CA", "CC", "CG", "CT", "GA", "GC", "GG", "GT", "TA", "TC", "TG", "TT"]
-        keys_sorted = ["AA", "CA", "GA", "TA", "AC", "CC", "GC", "TC", "AG", "CG", "GG", "TG", "AT", "CT", "GT", "TT"]
-        pair_wise_differences_normed = [pair_wise_differences[key][1]/pair_wise_differences[key][0]
-                                        for key in keys_sorted]
-
-        plt.bar(keys_sorted, pair_wise_differences_normed)
-        plt.show()
-
-
     def plot_relative_breakpairs(self, data_dict_in, save_path=None):
         a_bases = ["AA", "CA", 'GA', "TA"]
         c_bases = ["AC", "CC", 'GC', "TC"]
         g_bases = ["AG", "CG", 'GG', "TG"]
         t_bases = ["AT", "CT", 'GT', "TT"]
         plt.figure(figsize=(9, 9))
-        plt.errorbar([1,2,3,4], [data_dict_in[o][0] for o in a_bases], marker = "o", ls="--", yerr=[data_dict_in[o][1] for o in a_bases], color = 'blue', capsize=3, capthick=1)
-        plt.errorbar([6,7,8,9], [data_dict_in[o][0]  for o in c_bases], marker = "o", ls="--", yerr=[data_dict_in[o][1] for o in c_bases], color = 'red', capsize=3, capthick=1)
-        plt.errorbar([11,12,13,14], [data_dict_in[o][0]for o in g_bases], marker = "o", ls="--", yerr=[data_dict_in[o][1] for o in g_bases], color = 'orange', capsize=3, capthick=1)
-        plt.errorbar([16,17,18,19], [data_dict_in[o][0]  for o in t_bases],  marker = "o", ls="--", yerr=[data_dict_in[o][1] for o in t_bases], color = 'green', capsize=3, capthick=1)
-        plt.xticks([1,2,3,4, 6,7,8,9, 11,12,13,14, 16,17,18,19], a_bases+c_bases+g_bases+t_bases, weight=self.font_weight, fontname=self.font, size=self.font_size-5)
-        plt.yticks(weight=self.font_weight, fontname=self.font, size=self.font_size-5)
+        plt.errorbar([1, 2, 3, 4], [data_dict_in[o][0] for o in a_bases], marker="o", ls="--",
+                     yerr=[data_dict_in[o][1] for o in a_bases], color='blue', capsize=3, capthick=1)
+        plt.errorbar([6, 7, 8, 9], [data_dict_in[o][0] for o in c_bases], marker="o", ls="--",
+                     yerr=[data_dict_in[o][1] for o in c_bases], color='red', capsize=3, capthick=1)
+        plt.errorbar([11, 12, 13, 14], [data_dict_in[o][0] for o in g_bases], marker="o", ls="--",
+                     yerr=[data_dict_in[o][1] for o in g_bases], color='orange', capsize=3, capthick=1)
+        plt.errorbar([16, 17, 18, 19], [data_dict_in[o][0] for o in t_bases], marker="o", ls="--",
+                     yerr=[data_dict_in[o][1] for o in t_bases], color='green', capsize=3, capthick=1)
+        plt.xticks([1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19], a_bases + c_bases + g_bases + t_bases,
+                   weight=self.font_weight, fontname=self.font, size=self.font_size - 5)
+        plt.yticks(weight=self.font_weight, fontname=self.font, size=self.font_size - 5)
         plt.xlabel("Break pair in 5'-XY-3' direction", weight=self.font_weight, fontname=self.font, size=self.font_size)
         plt.ylabel("Relative breaking intensity", weight=self.font_weight, fontname=self.font, size=self.font_size)
         plt.tick_params(width=2)
@@ -721,28 +749,30 @@ class PlottingNGS:
             plt.clf()
         plt.close()
 
-    def plot_relative_breakpairs_per_sample_scatterplot(self, data_dict_in, name_dict_in, save_path = None):
-        markers = ["x","o", "*", "^", "h","D", "+", "s"]
+    def plot_relative_breakpairs_per_sample_scatterplot(self, data_dict_in, name_dict_in, save_path=None):
+        markers = ["x", "o", "*", "^", "h", "D", "+", "s"]
         a_bases = ["AA", "CA", 'GA', "TA"]
         c_bases = ["AC", "CC", 'GC', "TC"]
         g_bases = ["AG", "CG", 'GG', "TG"]
         t_bases = ["AT", "CT", 'GT', "TT"]
-        bases_ordered = a_bases + c_bases + g_bases + t_bases
+        # bases_ordered = a_bases + c_bases + g_bases + t_bases
 
         plt.figure(figsize=(9, 9))
-        for sample_key, marker in zip(list(data_dict_in.keys()),markers):
+        for sample_key, marker in zip(list(data_dict_in.keys()), markers):
             sample_dict = data_dict_in[sample_key]
-            plt.scatter([1,2,3,4], [sample_dict[o] for o in a_bases], color = 'blue', marker=marker)
-            plt.scatter([6,7,8,9], [sample_dict[o] for o in c_bases], color = 'red', marker=marker)
-            plt.scatter([11,12,13,14], [sample_dict[o] for o in g_bases], color = 'orange', marker=marker)
-            plt.scatter([16,17,18,19], [sample_dict[o] for o in t_bases], color = 'green', marker=marker)
+            plt.scatter([1, 2, 3, 4], [sample_dict[o] for o in a_bases], color='blue', marker=marker)
+            plt.scatter([6, 7, 8, 9], [sample_dict[o] for o in c_bases], color='red', marker=marker)
+            plt.scatter([11, 12, 13, 14], [sample_dict[o] for o in g_bases], color='orange', marker=marker)
+            plt.scatter([16, 17, 18, 19], [sample_dict[o] for o in t_bases], color='green', marker=marker)
             label_clean = name_dict_in[sample_key]
-            plt.scatter([],[], marker=marker, label=label_clean, color = "black")
-        
-        plt.xticks([1,2,3,4, 6,7,8,9, 11,12,13,14, 16,17,18,19], a_bases+c_bases+g_bases+t_bases, weight=self.font_weight, fontname=self.font, size=self.font_size-5)
+            plt.scatter([], [], marker=marker, label=label_clean, color="black")
+
+        plt.xticks([1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19], a_bases + c_bases + g_bases + t_bases,
+                   weight=self.font_weight, fontname=self.font, size=self.font_size - 5)
         plt.yticks(weight=self.font_weight, fontname=self.font, size=self.font_size)
-        plt.xlabel("Break pair in 5'-XY-3' direction", weight=self.font_weight, fontname=self.font, size=self.font_size+10)
-        plt.ylabel("Relative breaking intensity", weight=self.font_weight, fontname=self.font, size=self.font_size+10)
+        plt.xlabel("Break pair in 5'-XY-3' direction", weight=self.font_weight, fontname=self.font,
+                   size=self.font_size + 10)
+        plt.ylabel("Relative breaking intensity", weight=self.font_weight, fontname=self.font, size=self.font_size + 10)
         plt.tick_params(width=2)
         legend_properties = {'weight': self.font_weight, 'family': self.font, 'size': f"{self.font_size - 5}"}
         plt.legend(prop=legend_properties)
@@ -753,7 +783,7 @@ class PlottingNGS:
             plt.clf()
         plt.close()
 
-    def plot_relative_breakpairs_per_sample_boxplot(self, data_dict_in, save_path = None):
+    def plot_relative_breakpairs_per_sample_boxplot(self, data_dict_in, save_path=None):
         a_bases = ["AA", "CA", 'GA', "TA"]
         c_bases = ["AC", "CC", 'GC', "TC"]
         g_bases = ["AG", "CG", 'GG', "TG"]
@@ -769,15 +799,18 @@ class PlottingNGS:
                 values_current_base.append(sample_dict[base])
             all_vals.append(values_current_base)
 
-            
-        bplot = plt.boxplot(all_vals, positions=[1,2,3,4, 6,7,8,9, 11,12,13,14, 16,17,18,19], patch_artist=True)
-        for patch, color in zip(bplot['boxes'], ["blue", "blue", "blue", "blue", "red", "red", "red", "red", 
-                                         "orange", "orange", "orange", "orange", "green", "green", "green", "green"]):
+        bplot = plt.boxplot(all_vals, positions=[1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19],
+                            patch_artist=True)
+        for patch, color in zip(bplot['boxes'], ["blue", "blue", "blue", "blue", "red", "red", "red", "red",
+                                                 "orange", "orange", "orange", "orange", "green", "green", "green",
+                                                 "green"]):
             patch.set_facecolor(color)
-        plt.xticks([1,2,3,4, 6,7,8,9, 11,12,13,14, 16,17,18,19], a_bases+c_bases+g_bases+t_bases, weight=self.font_weight, fontname=self.font, size=self.font_size-5)
+        plt.xticks([1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19], a_bases + c_bases + g_bases + t_bases,
+                   weight=self.font_weight, fontname=self.font, size=self.font_size - 5)
         plt.yticks(weight=self.font_weight, fontname=self.font, size=self.font_size)
-        plt.xlabel("Break pair in 5'-XY-3' direction", weight=self.font_weight, fontname=self.font, size=self.font_size+10)
-        plt.ylabel("Relative breaking intensity", weight=self.font_weight, fontname=self.font, size=self.font_size+10)
+        plt.xlabel("Break pair in 5'-XY-3' direction", weight=self.font_weight, fontname=self.font,
+                   size=self.font_size + 10)
+        plt.ylabel("Relative breaking intensity", weight=self.font_weight, fontname=self.font, size=self.font_size + 10)
         plt.tick_params(width=2)
         if save_path:
             plt.savefig(save_path)
@@ -788,19 +821,17 @@ class PlottingNGS:
 
 
 if __name__ == "__main__":
-
     # Example on how to use this script to create figures from data created in FilteringAlgorithm.py
     plotter = PlottingNGS()
+    fig_num = 69
     #plotter.plot_overlay_histogramm(
-    #["ATMi0_Breaking_Dist_Norm_Shifted_Average.csv", "ATMi1_Breaking_Dist_Norm_Shifted_Average.csv",
-    #"ATMi2_Breaking_Dist_Norm_Shifted_Average.csv", "ATMi3_Breaking_Dist_Norm_Shifted_Average.csv"], "../ProcessedData/MirrorBatch6/",
-    #[plotter.colors["ATMi0"], plotter.colors["ATMi1"], plotter.colors["ATMi2"], plotter.colors["ATMi3"]])
-    plotter.plot_single_breaking([""])
-    #plotter.plot_single_breaking(["HP2_Breaking_Dist_Norm_Shifted_Single_Average.csv"], "../ProcessedData/Hairpin/", True, 2, True, True, 361, "blue", "../Graphics/Hairpin/HP2_Breaking_Dist_Norm_Shifted_Single_Average_Top.pdf")
-    #plotter.plot_single_breaking(["HP2_3_Breaking_Dist_Norm_Shifted_Single.csv"], "../ProcessedData/Hairpin/", False, 1, True, False, 353, "blue", "../Graphics/Hairpin/HP2_3_Breaking_Dist_Norm_Shifted_Single.pdf")
-    # plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_All_Single.csv"], "../ProcessedData/Hairpin/", "Mu", "../Graphics/Hairpin/Mu_Shifted_Single_Scatter_Plot.pdf")
-    # plotter.difference_from_fit(["dsDNA_c2_1_Breaking_Dist_Norm.csv"], "../ProcessedData/dsDNABatch6/", False, False, sequence, False)#"../Graphics/Hairpin/HP2_Breaking_Single_Reads_Top.pdf")
-    #plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_All_Single_Right_Top.csv"], "../ProcessedData/Hairpin/", "Mu", "../Graphics/Hairpin/Mu_Right_Top_Single_Scatter_Plot.pdf")
-    #plotter.plot_fit_paramameter_scatter_single(["Gaussian_Sigma_All_Single_Right_Top.csv"], "../ProcessedData/Hairpin/", "Sigma", "../Graphics/Hairpin/Sigma_Single_Right_Top_Scatter_Plot.pdf")
+    #    ["GC_Breaking_Dist_Norm_Shifted_Average.csv", "704_Breaking_Dist_Norm_Shifted_Average.csv",
+    #     "AT_Breaking_Dist_Norm_Shifted_Average.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/",
+    #    [plotter.colors["GC"], plotter.colors["704"], plotter.colors["AT"]])
+    plotter.plot_fit_paramameter_scatter_single_fit(["Gaussian_Sigma_ATMi.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/", "Sigma")#, "../Graphics/704_AT_GC_400_1500_ATMi/Sigma_Scatter_Plot_ATMi.pdf")
+    #plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_ATMi.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/", "Mu", "../Graphics/704_AT_GC_400_1500_ATMi/Mu_Shifted_Scatter_Plot_ATMi.pdf")
 
-    #plotter.plot_single_breaking(["HP1_Breaking_Dist_Norm_Shifted_Single_Average.csv", "HP0_2_Breaking_Dist_Full_Shifted_Single.csv"]), 
+    plotter.plot_p_value_matrix(f"FigS{fig_num}.csv", f"C:/Users/Boris/Desktop/Data/Supplement/NEW/FigS{fig_num}/")
+    #plotter.plot_fit_paramameter_scatter_double(["Sigma_Data_ATMi.csv", "Sigma_Fit_ATMi.csv"], "../ProcessedData/", "Sigma", "../Graphics/704_AT_GC_400_1500_ATMi_Statistics/Sigma_Comparison.pdf")
+    # plotter.plot_three_breaking([f"FigS{fig_num}R.csv"], f"C:/Users/Boris/Desktop/Data/Supplement/NEW/FigS{fig_num}/", False, False, 353)
+    # plotter.plot_single_breaking(["HP1_Breaking_Dist_Norm_Shifted_Single_Average.csv", "HP0_2_Breaking_Dist_Full_Shifted_Single.csv"]),

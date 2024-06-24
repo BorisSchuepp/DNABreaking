@@ -153,13 +153,12 @@ def match_to_reference_single_read(read_in, reference_strand_a, reference_strand
     else:
         return found_index, result_pos, len(mismatch_indices)
 
+
 # Tries to match a read on a single reference strand. Firstly, the inital bases are matched without tolerance for mismatches
 # Afterwards the remainder is matched with a number of mismatches that are tolerated. 
 def match_to_reference_single_read_single_sequence(read_in, reference_strand,
-                                   no_mismatch_tolerance_distance_in, maxium_further_mismatches_in):
-
-
-    # Check if the initial bases are found on the reference 
+                                                   no_mismatch_tolerance_distance_in, maxium_further_mismatches_in):
+    # Check if the initial bases are found on the reference
     initial_bases = read_in[0][:no_mismatch_tolerance_distance_in]
     pos_strand = reference_strand.find(initial_bases)
     if pos_strand == -1:
@@ -171,7 +170,8 @@ def match_to_reference_single_read_single_sequence(read_in, reference_strand,
     # Count the missmatches on the remainder 
     remaining_sequence = read_in[0][no_mismatch_tolerance_distance_in:]
     reference_sequence_stretch = reference_strand[pos_found + no_mismatch_tolerance_distance_in:
-                                              pos_found + no_mismatch_tolerance_distance_in + len(remaining_sequence)]
+                                                  pos_found + no_mismatch_tolerance_distance_in + len(
+                                                      remaining_sequence)]
 
     mismatch_indices = get_mismatches(remaining_sequence, reference_sequence_stretch)
 
@@ -381,21 +381,31 @@ def match_reads_single(reads_in, sequences_in, window_in, centroids_in, sample_n
     for data_set in reads_in:
         for read_idx in data_set.keys():
             read_seq = data_set[read_idx]
-            res_1 = match_to_reference_single_read_single_sequence(read_seq, top_sequence, no_mismatch_tolerance_distance, maxium_further_missmatches)
-            res_2 = match_to_reference_single_read_single_sequence(read_seq, bot_sequence, no_mismatch_tolerance_distance, maxium_further_missmatches)
-            
+            res_1 = match_to_reference_single_read_single_sequence(read_seq, top_sequence,
+                                                                   no_mismatch_tolerance_distance,
+                                                                   maxium_further_missmatches)
+            res_2 = match_to_reference_single_read_single_sequence(read_seq, bot_sequence,
+                                                                   no_mismatch_tolerance_distance,
+                                                                   maxium_further_missmatches)
+
             if res_1[0] == -1 and res_2[0] == -1:
                 count_invalid += 1
                 if top_sequence != get_complementary_strand(bot_sequence):
                     # Check if taking the complementary sequence reduces the error. This is only relevant/different if top and bot sequence are not complementary
-                    res_3 = match_to_reference_single_read_single_sequence(read_seq, get_complementary_strand(top_sequence), no_mismatch_tolerance_distance, maxium_further_missmatches)
-                    res_4 = match_to_reference_single_read_single_sequence(read_seq, get_complementary_strand(bot_sequence), no_mismatch_tolerance_distance, maxium_further_missmatches)
+                    res_3 = match_to_reference_single_read_single_sequence(read_seq,
+                                                                           get_complementary_strand(top_sequence),
+                                                                           no_mismatch_tolerance_distance,
+                                                                           maxium_further_missmatches)
+                    res_4 = match_to_reference_single_read_single_sequence(read_seq,
+                                                                           get_complementary_strand(bot_sequence),
+                                                                           no_mismatch_tolerance_distance,
+                                                                           maxium_further_missmatches)
                     if res_3[0] == -1 and res_4[0] == -1:
                         count_invalid_ex += 1
-            
+
             if res_1[0] != -1 and res_2[0] != -1:
                 print("WARNING: Found a single read on both strands!")
-            
+
             if res_1[0] != -1:
                 if res_1[0] not in top_indices.keys():
                     top_indices[res_1[0]] = 1
@@ -408,47 +418,46 @@ def match_reads_single(reads_in, sequences_in, window_in, centroids_in, sample_n
                 else:
                     bot_indices[res_2[0]] += 1
 
-    x_vals = sorted([key-centroids_in[0] for key in top_indices.keys()
-                     if centroids_in[0]-window_in <= key <= centroids_in[0]+window_in])
-    y_vals = [top_indices[i+centroids_in[0]] for i in x_vals]
-    
-    if norm:
-        y_vals = [i/sum(y_vals) for i in y_vals]
+    x_vals = sorted([key - centroids_in[0] for key in top_indices.keys()
+                     if centroids_in[0] - window_in <= key <= centroids_in[0] + window_in])
+    y_vals = [top_indices[i + centroids_in[0]] for i in x_vals]
 
+    if norm:
+        y_vals = [i / sum(y_vals) for i in y_vals]
 
     res_dict = {i: y_vals[x_vals.index(i)] for i in x_vals}
     res_dict_new = {f"{sample_name_in}#TOP": res_dict}
 
-    x_vals = sorted([key-centroids_in[1] for key in bot_indices.keys()
-                     if centroids_in[1]-window_in <= key <= centroids_in[1]+window_in])
-    y_vals = [bot_indices[i+centroids_in[1]] for i in x_vals]
+    x_vals = sorted([key - centroids_in[1] for key in bot_indices.keys()
+                     if centroids_in[1] - window_in <= key <= centroids_in[1] + window_in])
+    y_vals = [bot_indices[i + centroids_in[1]] for i in x_vals]
 
     if norm:
-        y_vals = [i/sum(y_vals) for i in y_vals]
+        y_vals = [i / sum(y_vals) for i in y_vals]
 
     res_dict = {i: y_vals[x_vals.index(i)] for i in x_vals}
     res_dict_new[f"{sample_name_in}#BOT"] = res_dict
-
 
     if norm:
         tag = "Norm_"
     else:
         tag = "Full_"
 
-    DataUtilities.print_breaking(res_dict_new, True, f"{sample_name_in}_Breaking_Dist_{tag}Shifted_Single.csv", output_dir_in)
+    DataUtilities.print_breaking(res_dict_new, True, f"{sample_name_in}_Breaking_Dist_{tag}Shifted_Single.csv",
+                                 output_dir_in)
     print(f"{sample_name_in}: Invalid, no complement (single reads)",
-          100*count_invalid/sum([len(data) for data in reads_in]))
+          100 * count_invalid / sum([len(data) for data in reads_in]))
     if top_sequence != get_complementary_strand(bot_sequence):
         print(f"{sample_name_in}: Invalid, with complement (single reads)",
-            100*count_invalid_ex/sum([len(data) for data in reads_in]))
+              100 * count_invalid_ex / sum([len(data) for data in reads_in]))
 
     return top_indices, bot_indices
 
 
 # Global properties
-config_file_path = "../RunConfigurations/Config_ss_Batch5.txt"
+config_file_path = "../RunConfigurations/Config_704_AT_GC_400_1500_ATMi.txt"
 create_graphics = True
-single_read_analysis = True 
+single_read_analysis = False
 no_mismatch_tolerance_distance = 20
 maxium_further_missmatches = 10
 gaussian_fit_window = 50
@@ -480,15 +489,15 @@ all_sigma = {}
 all_mu = {}
 all_mu_shifted = {}
 
-
 # Perform various data analysis steps on each sample
 for (paired_read_sample_path, sample_name,
      sample_sequence, secondary_sequence, sample_nick) in zip(paired_read_sample_paths,
-                                                              sample_names, sample_sequences, sample_sequences_second, sample_nicks):
+                                                              sample_names, sample_sequences, sample_sequences_second,
+                                                              sample_nicks):
     # Read raw data
     data_read_1 = read_input_file(paired_read_sample_path[0])
     data_read_2 = read_input_file(paired_read_sample_path[1])
-    out_str = f"{sample_name}: Number of raw single reads are {len(data_read_1)} (read 1) "\
+    out_str = f"{sample_name}: Number of raw single reads are {len(data_read_1)} (read 1) " \
               f"and {len(data_read_2)} (read 2)."
     print(out_str)
     log_file.write(out_str + "\n")
@@ -503,6 +512,7 @@ for (paired_read_sample_path, sample_name,
     DataUtilities.print_quality_results(quality_values_averages_dict, f"{sample_name}_Quality.csv", data_export_dir)
 
     # Single read analysis
+
     if single_read_analysis:
         both_sequences = [sample_sequence, secondary_sequence]
 
@@ -510,7 +520,7 @@ for (paired_read_sample_path, sample_name,
                            gaussian_fit_window, [sample_nick[1], sample_nick[3]], sample_name, data_export_dir)
         match_reads_single([data_read_1, data_read_2], both_sequences,
                            gaussian_fit_window, [sample_nick[1], sample_nick[3]], sample_name, data_export_dir, False)
-    
+
     # Combine paired reads from sequence index
 
     data_paired = match_paired_reads(data_read_1, data_read_2)
@@ -524,7 +534,7 @@ for (paired_read_sample_path, sample_name,
     paired_reads_matched, paired_reads_matched_filtered = (
         match_to_reference(data_paired, strand_top_53, no_mismatch_tolerance_distance, maxium_further_missmatches))
 
-    out_str = f"{sample_name}: Number of valid paired reads is {len(paired_reads_matched_filtered)}, which is "\
+    out_str = f"{sample_name}: Number of valid paired reads is {len(paired_reads_matched_filtered)}, which is " \
               f"{round(len(paired_reads_matched_filtered) / len(paired_reads_matched) * 100, 1)} % of total."
     print(out_str)
     log_file.write(out_str + "\n")
@@ -638,7 +648,8 @@ for sample_group in set(list(sample_groups.values())):
         data_breaking_group_norm_shifted = [data_breaking_group_norm_shifted_dict[i] for i in
                                             data_breaking_group_norm_shifted_dict.keys() if i.find(f"{strand}") != -1]
         data_breaking_group_norm_shifted_single = [data_breaking_group_norm_shifted_single_dict[i] for i in
-                                            data_breaking_group_norm_shifted_single_dict.keys() if i.find(f"{strand}") != -1]
+                                                   data_breaking_group_norm_shifted_single_dict.keys() if
+                                                   i.find(f"{strand}") != -1]
 
         data_breaking_average_norm = average_break_counts(data_breaking_group_norm)
         data_breaking_group_norm_shifted = average_break_counts(data_breaking_group_norm_shifted)
@@ -664,7 +675,6 @@ for sample_group in set(list(sample_groups.values())):
     DataUtilities.print_breaking(data_breaking_group_norm_shifted_single_averaged, True,
                                  f"{sample_group}_Breaking_Dist_Norm_Shifted_Single_Average.csv", data_export_dir)
 
-
 DataUtilities.print_fit_parameters(all_mu, sample_groups, "Gaussian_Mu_All.csv", data_export_dir)
 DataUtilities.print_fit_parameters(all_sigma, sample_groups, "Gaussian_Sigma_All.csv", data_export_dir)
 DataUtilities.print_fit_parameters(all_mu_shifted, sample_groups, "Gaussian_Mu_Shifted_All.csv", data_export_dir)
@@ -682,7 +692,6 @@ log_file.write(out_str)
 print(out_str)
 log_file.close()
 
-
 # Graphics creation
 
 if create_graphics:
@@ -696,7 +705,7 @@ if create_graphics:
             gaussian_top = False
         else:
             gaussian_top = True
-        
+
         plotter.plot_single_breaking([f"{sample_name}_Breaking_Dist_Norm.csv"], data_export_dir,
                                      True, gaussian_top, False, False, centroid, "blue",
                                      f"{graphics_dir}{sample_name}_Breaking_Dist_Norm_Top.pdf")
@@ -705,7 +714,6 @@ if create_graphics:
                                      f"{graphics_dir}{sample_name}_Breaking_Dist_Norm_Bot.pdf")
         plotter.plot_lengths(f"{sample_name}_Lengths.csv", data_export_dir,
                              f"{graphics_dir}{sample_name}_Lengths.pdf")
-
 
     # Grouped sample graphics (average breaking for each strand, compariosn of breaking for each strand,
     # basecouts and filtering results
@@ -717,7 +725,7 @@ if create_graphics:
 
         quality_names = [f"{sample_name}_Quality.csv" for sample_name in sample_names_group]
         plotter.plot_quality_values(quality_names, data_export_dir,
-                                f"{graphics_dir}{sample_group}_Quality.pdf")
+                                    f"{graphics_dir}{sample_group}_Quality.pdf")
 
         # Plot basecounts
 
@@ -729,7 +737,7 @@ if create_graphics:
 
         filtering_names = [f"{sample_name}_Filtering.csv" for sample_name in sample_names_group]
         plotter.plot_filtering_results(filtering_names, data_export_dir,
-                                f"{graphics_dir}{sample_group}_Filtering.pdf")
+                                       f"{graphics_dir}{sample_group}_Filtering.pdf")
 
         sample_nick_final = (0, 0)
         for sample_name, sample_nick in zip(sample_names, sample_nicks):
@@ -747,13 +755,11 @@ if create_graphics:
         # Plot average breaking distribution
 
         plotter.plot_single_breaking([f"{sample_group}_Breaking_Dist_Norm_Shifted_Average.csv"], data_export_dir,
-                                True, gaussian_top, True, True, centroid, "blue",
+                                     True, gaussian_top, True, True, centroid, "blue",
                                      f"{graphics_dir}{sample_group}_Break_Dist_Norm_Shifted_Average_Top.pdf")
-        print("Printed Top Average", sample_group)
         plotter.plot_single_breaking([f"{sample_group}_Breaking_Dist_Norm_Shifted_Average.csv"], data_export_dir,
-                                False, not gaussian_top, True, True, centroid, "blue",
+                                     False, not gaussian_top, True, True, centroid, "blue",
                                      f"{graphics_dir}{sample_group}_Break_Dist_Norm_Shifted_Average_Bot.pdf")
-        print("Printed Bot Average", sample_group)
 
         breaking_dist_names = [f"{sample_name}_Breaking_Dist_Norm.csv" for sample_name in sample_names_group]
 
