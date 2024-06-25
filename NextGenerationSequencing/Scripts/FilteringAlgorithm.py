@@ -635,25 +635,19 @@ for sample_group in set(list(sample_groups.values())):
     data_breaking_group_norm_dict = DataUtilities.read_breaking_results(group_sample_names_norm, data_export_dir)
     data_breaking_group_norm_shifted_dict = DataUtilities.read_breaking_results(
         group_sample_names_norm_shifted, data_export_dir)
-    data_breaking_group_norm_shifted_single_dict = DataUtilities.read_breaking_results(
-        group_sample_names_norm_shifted_single, data_export_dir)
+    
 
     data_breaking_group_norm_averaged = {}
     data_breaking_group_norm_shifted_averaged = {}
-    data_breaking_group_norm_shifted_single_averaged = {}
 
     for strand in ["TOP", "BOT"]:
         data_breaking_group_norm = [data_breaking_group_norm_dict[i] for i in
                                     data_breaking_group_norm_dict.keys() if i.find(f"{strand}") != -1]
         data_breaking_group_norm_shifted = [data_breaking_group_norm_shifted_dict[i] for i in
                                             data_breaking_group_norm_shifted_dict.keys() if i.find(f"{strand}") != -1]
-        data_breaking_group_norm_shifted_single = [data_breaking_group_norm_shifted_single_dict[i] for i in
-                                                   data_breaking_group_norm_shifted_single_dict.keys() if
-                                                   i.find(f"{strand}") != -1]
 
         data_breaking_average_norm = average_break_counts(data_breaking_group_norm)
         data_breaking_group_norm_shifted = average_break_counts(data_breaking_group_norm_shifted)
-        data_breaking_group_norm_shifted_single = average_break_counts(data_breaking_group_norm_shifted_single)
 
         data_breaking_group_norm_averaged[
             f"{sample_group}#{strand}#AVERAGE"] = data_breaking_average_norm["Average"]
@@ -663,17 +657,13 @@ for sample_group in set(list(sample_groups.values())):
             f"{sample_group}#{strand}#AVERAGE"] = data_breaking_group_norm_shifted["Average"]
         data_breaking_group_norm_shifted_averaged[
             f"{sample_group}#{strand}#STD"] = data_breaking_group_norm_shifted["Standard Deviation"]
-        data_breaking_group_norm_shifted_single_averaged[
-            f"{sample_group}#{strand}#AVERAGE"] = data_breaking_group_norm_shifted_single["Average"]
-        data_breaking_group_norm_shifted_single_averaged[
-            f"{sample_group}#{strand}#STD"] = data_breaking_group_norm_shifted_single["Standard Deviation"]
+
 
     DataUtilities.print_breaking(data_breaking_group_norm_averaged, False,
                                  f"{sample_group}_Breaking_Dist_Norm_Average.csv", data_export_dir)
     DataUtilities.print_breaking(data_breaking_group_norm_shifted_averaged, True,
                                  f"{sample_group}_Breaking_Dist_Norm_Shifted_Average.csv", data_export_dir)
-    DataUtilities.print_breaking(data_breaking_group_norm_shifted_single_averaged, True,
-                                 f"{sample_group}_Breaking_Dist_Norm_Shifted_Single_Average.csv", data_export_dir)
+
 
 DataUtilities.print_fit_parameters(all_mu, sample_groups, "Gaussian_Mu_All.csv", data_export_dir)
 DataUtilities.print_fit_parameters(all_sigma, sample_groups, "Gaussian_Sigma_All.csv", data_export_dir)

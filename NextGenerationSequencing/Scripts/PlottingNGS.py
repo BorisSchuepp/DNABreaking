@@ -294,7 +294,7 @@ class PlottingNGS:
 
         plt.xlim(min(x_data), max(x_data))
         if not shift:
-            x_ticks = [i for i in range(int(min(x_data)), int(max(x_data))) if i % 5 == centroid % 5]
+            x_ticks = [i for i in range(int(min(x_data)), int(max(x_data))) if i % 10 == centroid % 10]
             x_tick_labels = [str(round(int(i))) for i in x_ticks]
             # x_tick_labels[x_tick_labels.index((str(float(centroid))))] = str(centroid) + "*"
             plt.xticks(x_ticks, x_tick_labels, weight=self.font_weight, fontname=self.font, size=self.font_size)

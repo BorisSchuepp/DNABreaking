@@ -33,9 +33,9 @@ print_multiple_dictionaries(data_sigma_704, "Sample number", "Gaussian_Sigma_704
 plotter = PlottingNGS()
 
 plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_ATMi.csv"], data_out_directory, "Mu", f"{graphics_directory}Mu_Shifted_Scatter_Plot_ATMi.pdf")
-plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_704_400_1500_AT_GC.csv"], data_out_directory, "Mu",f"{graphics_directory}Sigma_Shifted_Scatter_Plot_Fig4.pdf")
+plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_704_400_1500_AT_GC.csv"], data_out_directory, "Mu",f"{graphics_directory}Sigma_Shifted_Scatter_Plot_704_400_1500_AT_GC.pdf")
 plotter.plot_fit_paramameter_scatter_single_fit(["Gaussian_Sigma_ATMi.csv"], data_out_directory, "Sigma",f"{graphics_directory}Sigma_Scatter_Plot_ATMi.pdf")
-plotter.plot_fit_paramameter_scatter_single(["Gaussian_Sigma_704_400_1500_AT_GC.csv"], data_out_directory, "Sigma",f"{graphics_directory}Mu_Shifted_Scatter_Plot_Fig4.pdf")
+plotter.plot_fit_paramameter_scatter_single(["Gaussian_Sigma_704_400_1500_AT_GC.csv"], data_out_directory, "Sigma",f"{graphics_directory}Mu_Shifted_Scatter_Plot_704_400_1500_AT_GC.pdf")
 
 # One-way ANOVA with n = 3
 

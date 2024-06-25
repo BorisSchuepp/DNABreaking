@@ -13,7 +13,7 @@ in the desired directory.
 
 # Hardware requirements
 The software runs on a standard computer with a sufficient amount of RAM. The Next Generation Sequencing code runs for the 
-major dataset in less then 20 minutes.  
+major dataset in less then 10 minutes.  
 
 # Software requirements
 **Next Generation Sequencing**: Software will run in a common python3 enviroment (tested with Python 3.12). \
