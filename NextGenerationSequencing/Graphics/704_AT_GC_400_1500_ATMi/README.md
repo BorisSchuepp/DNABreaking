@@ -1,0 +1,1 @@
+Here, graphics related to the NGS analysis will appear, such as breaking distributions.

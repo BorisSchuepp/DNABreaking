@@ -6,6 +6,7 @@ import DataUtilities
 import Fitting
 import matplotlib.colors as mcolors
 
+from matplotlib.colors import LinearSegmentedColormap
 
 class PlottingNGS:
 
@@ -408,7 +409,7 @@ class PlottingNGS:
                     continue
                 if sample_num != "Average":
                     plt.scatter(position, fit_parameters[sample][sample_num], alpha=0.5, color=current_color,
-                                marker="o", s=self.marker_size, edgecolor='black', linewidth=1.5)
+                                marker="o", s=self.marker_size-250, edgecolor='black', linewidth=1.5)
                 else:
                     plt.scatter(position, fit_parameters[sample][sample_num], alpha=1, color=current_color,
                                 marker="*", s=self.marker_size, edgecolor='black', linewidth=1.5)
@@ -454,7 +455,7 @@ class PlottingNGS:
 
         fit_parameters = DataUtilities.read_fit_parameters(file_names_in, directory_in)
         num_of_samples = len(list(fit_parameters.keys()))
-        positions = range(1, num_of_samples + 1)
+        positions = range(0, num_of_samples)
 
         plt.figure(figsize=(7, 7))
 
@@ -469,7 +470,7 @@ class PlottingNGS:
                     continue
                 if sample_num != "Average":
                     plt.scatter(position, fit_parameters[sample][sample_num], alpha=0.5, color=current_color,
-                                marker="o", s=self.marker_size, edgecolor='black', linewidth=1.5)
+                                marker="o", s=self.marker_size-250, edgecolor='black', linewidth=1.5)
                 else:
                     plt.scatter(position, fit_parameters[sample][sample_num], alpha=1, color=current_color,
                                 marker="*", s=self.marker_size, edgecolor='black', linewidth=1.5)
@@ -480,14 +481,30 @@ class PlottingNGS:
             plt.xticks(positions, [i.strip("*") + "*" for i in fit_parameters.keys()], weight=self.font_weight,
                        fontname=self.font, size=self.font_size - 10)
 
-        x = [0, 1, 2, 3]
-        y = [fit_parameters[sample]["Average"] for sample in fit_parameters.keys() if sample != "ATMi4"]
-        if parameter_name == "Sigma":
-            m, b, r2, new_x, new_y = Fitting.fit_linear(x, y, True)
-            print("Linear fit with m*x+b, m = ", round(m, 2), " and b = ", round(b, 2), " with R^2 = ", round(r2, 3))
-            plt.plot(new_x, new_y, linestyle='--', color="black", linewidth=2.5,
-                     label=str(round(m, 2)) + "$\\mathbf{\\cdot x +}$" + str(round(b, 2)) + ", with " + "$\\mathbf{R^2} =$" + " " + str(round(r2, 3)))
+        significance = {('0', '4'): '*', ('0', '3'): '**', ('0','2'): '*', ('1','3'): '*', ('2','3'): '*'} 
+        ax = plt.gca()
+        y_max = ax.get_ylim()[1] 
+        y = y_max + 0.1
+        for (pos1, pos2), stars in significance.items(): 
+            
+            ax.annotate('', xy=(int(pos1), y), xycoords='data', xytext=(int(pos2), y), textcoords='data', arrowprops=dict(arrowstyle='|-|', mutation_scale = 4, lw=2.5, color='black')) 
+            ax.text((int(pos1)+int(pos2))/2, y+0.01, stars, horizontalalignment='center', verticalalignment='center', fontsize=self.font_size, fontweight=self.font_weight, fontname=self.font)
+            y += 0.15
 
+        x = [0, 1, 2, 3, 4]
+        y = [[fit_parameters[sample][a] for a in fit_parameters[sample] if a != "Average"] for sample in fit_parameters.keys()]
+        if parameter_name == "Sigma":
+            result, prediction, prediction_with_ci, x_values_large = Fitting.fit_linear(x, y)
+            m = result.params[1]
+            b = result.params[0]
+            r2 = result.rsquared
+            label=str(round(m, 2)) + "$\\mathbf{\\cdot x +}$" + str(round(b, 2)) + ", with " + "$\\mathbf{R^2} =$" + " " + str(round(r2, 3))
+            plt.plot(x_values_large, prediction.predicted_mean, linestyle='--', color="black", linewidth=2.5,
+                     label=label)
+            plt.plot(x_values_large, prediction_with_ci.obs_ci_lower, linestyle='--', color="grey", linewidth=1.5)
+            plt.plot(x_values_large, prediction_with_ci.obs_ci_upper, linestyle='--', color="grey", linewidth=1.5,)
+            plt.fill_between(x_values_large, prediction_with_ci.obs_ci_lower, prediction_with_ci.obs_ci_upper, color = "grey", alpha = 0.2, label="Confidence interval of fit")
+            plt.xlim(-0.15, 4.15)
         if parameter_name == "Mu":
             plt.yticks([-1.0, -0.5, 0, 0.5, 1.0], ["-1.0", "-0.5", "0", "0.5", "1.0"], weight=self.font_weight,
                        fontname=self.font, size=self.font_size)
@@ -506,7 +523,7 @@ class PlottingNGS:
         plt.xlabel("Sample", weight=self.font_weight, fontname=self.font,
                    size=self.font_size + 10)
         legend_properties = {'weight': self.font_weight, 'family': self.font, 'size': f"{self.font_size - 5}"}
-        plt.legend(prop=legend_properties)
+        plt.legend(prop=legend_properties, loc='lower right')
         plt.tight_layout()
 
         if save_path:
@@ -691,23 +708,40 @@ class PlottingNGS:
     # Plot a p matrix from a file and directory as a nxn heatmap, only works with binned p matrices.
     def plot_p_value_matrix(self, file_name_in, directory_in, save_path=None):
         matrix, names_fixed = DataUtilities.read_p_matrix(file_name_in, directory_in)
-
+        names_fixed = [name + "*" for name in names_fixed]
         fig, ax = plt.subplots(figsize=(9, 9))
-        colors = ['#e51f1f', '#f2a134', '#f7e379', '#bbdb44', '#44ce1b']
-        cmap = mcolors.ListedColormap(colors)
-        bounds = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5]
-        norm = mcolors.BoundaryNorm(bounds, cmap.N)
-        cax = ax.matshow(matrix, interpolation='nearest', cmap=cmap, norm=norm)
-        ticks = [0, 1, 2, 3, 4]
-        tick_labels = ["ns", "*", "**", "***", "****"]
-        cbar = fig.colorbar(cax, ticks=ticks)
-        cbar.set_label('Significance',
-                       fontsize=self.font_size, fontname=self.font, fontweight=self.font_weight)
-        cbar.ax.set_yticklabels(tick_labels,
-                                fontsize=self.font_size, fontname=self.font, fontweight=self.font_weight)
+        
+        colors = ['white', 'white']
+        cmap = LinearSegmentedColormap.from_list("Custom_cmap", colors, N=256)
+        cax = ax.matshow(matrix, interpolation='nearest', cmap=cmap, vmin=0, vmax=1)
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                addition = ""
+                if matrix[i][j]<0.05:
+                    addition = "*"
+                if matrix[i][j]<0.01:
+                    addition = "**"
+                if matrix[i][j]<0.001:
+                    addition = "***"
+                if matrix[i][j]<0.0001:
+                    addition = "****"
+                if addition != "":
+                    if matrix[i][j] < 0.001:
+                        ax.text(j,i, f"{matrix[i][j]:.1e}{addition}", va='center', ha='center', color='black', fontsize=self.font_size-5, fontweight=self.font_weight)
+                    else:
+                        ax.text(j,i, f"{matrix[i][j]:.3f}{addition}", va='center', ha='center', color='black', fontsize=self.font_size-5, fontweight=self.font_weight)
 
+                else: 
+                    ax.text(j,i, f"{matrix[i][j]:.3f}", va='center', ha='center', color='black', fontsize=self.font_size-5)
+
+        ax.grid(which='minor', color='black',linewidth=2)
+        ax.set_xticks([a-0.5 for a in range(len(names_fixed))], minor=True)
+        ax.set_yticks([a-0.5 for a in range(len(names_fixed))], minor=True)
         ax.set_xticks(range(len(names_fixed)))
         ax.set_yticks(range(len(names_fixed)))
+        ax.tick_params(width=0, which='minor')
+        ax.tick_params(width=2, which='major')
+
         ax.set_xticklabels(names_fixed, rotation=90,
                            fontsize=self.font_size, fontname=self.font, fontweight=self.font_weight)
         ax.set_yticklabels(names_fixed,
@@ -823,15 +857,7 @@ class PlottingNGS:
 if __name__ == "__main__":
     # Example on how to use this script to create figures from data created in FilteringAlgorithm.py
     plotter = PlottingNGS()
-    fig_num = 69
-    #plotter.plot_overlay_histogramm(
-    #    ["GC_Breaking_Dist_Norm_Shifted_Average.csv", "704_Breaking_Dist_Norm_Shifted_Average.csv",
-    #     "AT_Breaking_Dist_Norm_Shifted_Average.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/",
-    #    [plotter.colors["GC"], plotter.colors["704"], plotter.colors["AT"]])
-    plotter.plot_fit_paramameter_scatter_single_fit(["Gaussian_Sigma_ATMi.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/", "Sigma")#, "../Graphics/704_AT_GC_400_1500_ATMi/Sigma_Scatter_Plot_ATMi.pdf")
-    #plotter.plot_fit_paramameter_scatter_single(["Gaussian_Mu_Shifted_ATMi.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/", "Mu", "../Graphics/704_AT_GC_400_1500_ATMi/Mu_Shifted_Scatter_Plot_ATMi.pdf")
-
-    plotter.plot_p_value_matrix(f"FigS{fig_num}.csv", f"C:/Users/Boris/Desktop/Data/Supplement/NEW/FigS{fig_num}/")
-    #plotter.plot_fit_paramameter_scatter_double(["Sigma_Data_ATMi.csv", "Sigma_Fit_ATMi.csv"], "../ProcessedData/", "Sigma", "../Graphics/704_AT_GC_400_1500_ATMi_Statistics/Sigma_Comparison.pdf")
-    # plotter.plot_three_breaking([f"FigS{fig_num}R.csv"], f"C:/Users/Boris/Desktop/Data/Supplement/NEW/FigS{fig_num}/", False, False, 353)
-    # plotter.plot_single_breaking(["HP1_Breaking_Dist_Norm_Shifted_Single_Average.csv", "HP0_2_Breaking_Dist_Full_Shifted_Single.csv"]),
+    plotter.plot_overlay_histogramm(
+        ["GC_Breaking_Dist_Norm_Shifted_Average.csv", "704_Breaking_Dist_Norm_Shifted_Average.csv",
+         "AT_Breaking_Dist_Norm_Shifted_Average.csv"], "../ProcessedData/704_AT_GC_400_1500_ATMi/",
+        [plotter.colors["GC"], plotter.colors["704"], plotter.colors["AT"]])

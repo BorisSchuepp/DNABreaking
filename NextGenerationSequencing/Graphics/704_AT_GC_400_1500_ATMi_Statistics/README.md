@@ -1,0 +1,1 @@
+Here, graphics related to statistical analysis will appear.

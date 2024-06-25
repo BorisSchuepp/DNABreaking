@@ -2,7 +2,7 @@
 
 ## Publication by: Johannes Hahmann, Boris N. Schüpp, Aman Ishaqat, Arjuna Selvakumar, Robert Göstl, Frauke Gräter, and Andreas Herrmann
 
-## GitHub maintained by: Boris N. Schüpp, current version 1.0, last updated 18/02/2024 
+## GitHub maintained by: Boris N. Schüpp, current version 1.1, last updated 25/06/2024 
 
 
 
@@ -20,13 +20,13 @@ major dataset in less then 20 minutes.
 **Required python packages**: scipy, numpy, matplotlib, statistics, time, datetime.\
 **Molecular Dynamics**: Software can be run in a Linux terminal (only code with .sh) with GROMACS (tested on version 2021.4) and python3 installed. 
 Any other code (.py) runs with in a common python3 enviroment (tested with Python 3.12). \
-**Required python packages**: numpy, os, sys, matplotlib, statistics 
+**Required python packages**: numpy, os, sys, matplotlib, statistics, statsmodels
 
 # What is included?
 
 ## Next Generation Sequencing Analysis Pipeline
 The subdirectory NextGenerationSequencing contains the code to analize the results of ultrasonic breaking experiments on nicked dsDNA.
-The oringal sequencing data on which the manuscript is based, can be found on Zenodo (https://doi.org/10.5281/zenodo.10683295). In order to use the code please copy any .fastq file from Zenodo to the directory RawData/704_AT_GC_400_1500/. The script FilteringAlgorithm.py performs the analysis that yields the sequencing result presented in the manuscript. Any relevant processed data is written to ProcessedData/704_AT_GC_400_1500. Statistical analysis of these datasets is performed by using the StatisticalAnalysis script and any results are written to ProcessedData/704_AT_GC_400_1500_Statistics. Additionally, graphics/plots are created in the procedure and can be created on demand using PlottingNGS.py. Graphics can be found in the gaphics directory. 
+The oringal sequencing data on which the manuscript is based, can be found on Zenodo (https://doi.org/10.5281/zenodo.10683295). In order to use the code please copy any .fastq file from Zenodo to the directory RawData/704_AT_GC_400_1500/. The script FilteringAlgorithm.py performs the analysis that yields the sequencing result presented in the manuscript. Any relevant processed data is written to ProcessedData/704_AT_GC_400_1500_ATMi. Statistical analysis of these datasets is performed by using the StatisticalAnalysis script and any results are written to ProcessedData/704_AT_GC_400_1500_ATMi_Statistics. Additionally, graphics/plots are created in the procedure and can be created on demand using PlottingNGS.py. Graphics can be found in the gaphics directory. 
 
 To use the FilteringAlgorithm.py pipeline on different data, create a subdirectory in Graphics, RawData and ProcessedData. Afterwards 
 save your .fastq files to the RawData directory. Create a run configuration in the RunConfigurations directory and change FilteringAlgorithm.py to 

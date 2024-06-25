@@ -1,9 +1,9 @@
-# Script for handling Gaussian fits
+# Script for handling Fitting
 # Author: Boris N. Schüpp
 
 from scipy.optimize import curve_fit
 import numpy as np
-
+import statsmodels.api as sm 
 
 # Defintion of a Gaussian function, takes a list of x values and a sigma and mu value and
 # returns the respective y-values of the Gaussian Distribution
@@ -51,28 +51,22 @@ def fit_bimodal(data_in, provide_data=False):
 
 
 # Linear regression
-def fit_linear(data_x, data_y, interpolation):
-    parameters_top = curve_fit(linear_function, data_x, data_y)[0]
-    m = parameters_top[0]
-    b = parameters_top[1]
+def fit_linear(data_x, data_y):
+    x_list = []
+    y_list = []
+    for x_val, y_vals in zip(data_x, data_y):
+        for y_val in y_vals:
+            x_list.append(x_val)
+            y_list.append(y_val)
+    x_with_const = sm.add_constant(x_list)
+    model = sm.OLS(y_list, x_with_const)
+    result = model.fit()
+    x_big = np.linspace(min(x_list)-0.3, max(x_list)+0.3, 100)
+    x_big_with_constant = sm.add_constant(x_big)
+    prediction = result.get_prediction(x_big_with_constant)
+    prediction_with_confidence = prediction.summary_frame(alpha=0.05)
 
-    y_r2 = [linear_function(x, m, b) for x in data_x]
-    residuals_square = sum([(y - y_pred)**2 for y, y_pred in zip(data_y, y_r2)])
-    average = sum(data_y)/len(data_y)
-    variance_square = sum([(y-average)**2 for y in data_y])
-
-    r2 = 1-(residuals_square/variance_square)
-
-    if interpolation:
-
-        x_min = min(data_x)-0.1
-        x_max = max(data_x)+0.1
-        x_lin = [x_min + i * 0.1 for i in range(0, int((x_max - x_min) * 10))]
-        y_lin = [linear_function(i, m, b) for i in x_lin]
-        x_lin = [i + 1 for i in x_lin]
-        return m, b, r2, x_lin, y_lin
-    else:
-        return m, b, r2
+    return result, prediction, prediction_with_confidence, x_big
 
 
 # Performs a Gaussian fit on input data (dictionary x:y). Always returns sigma and mu, but can optionally return a
