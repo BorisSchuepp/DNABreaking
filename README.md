@@ -40,9 +40,7 @@ The molecular dynamics subdirectory includes scripts for the following four part
 3. Data exraction from .xtc trajectories. The script ProcessTrajectories.sh is able to extract relevant bond distances from the trajetories. The script can only be used in a Linux bash terminal mit GROMACS and python3 installed. \
 Use the script by excecuting \
 bash ProcessTrajectories.sh ../RawData/ ../StructureGeneration/InputStructures/ ../ProcessedData/GCContent/ \
-
 or
-
 bash ProcessTrajectoriesForceVariation.sh ../RawData/ ../StructureGeneration/InputStructures/ ../ProcessedData/ForceVariation/
 
 after saving the .xtc files from Zenodo in the RawData/ subdirectory.
