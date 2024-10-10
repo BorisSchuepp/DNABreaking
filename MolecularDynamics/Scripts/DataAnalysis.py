@@ -336,11 +336,11 @@ plotter = PlottingMD()
 sequences_704 = ["AAT", "ACT", "AGT", "GAT", "GGT", "GCT", "GTT"]
 
 # Read in Data
-data_export_directory = "../ProcessedData/"
+data_export_directory = "../ProcessedData/GCContent/"
 base_distance_input_file_name = f"{data_export_directory}BaseDistance_all.csv"
 end_to_end_distance_input_file_name = f"{data_export_directory}EndToEndDistance_fractional_all.csv"
 backbone_bond_distance_input_file_name = f"{data_export_directory}BackboneBondDistance_all.csv"
-graphics_directory = "../Graphics/"
+graphics_directory = "../Graphics/GCContent/"
 base_distance_data_dict = read_base_distances(base_distance_input_file_name)
 end_to_end_distance_data_dict = read_end_to_end_distances(end_to_end_distance_input_file_name)
 backbone_bond_distance_data_dict = read_backbone_bond_distances(backbone_bond_distance_input_file_name)

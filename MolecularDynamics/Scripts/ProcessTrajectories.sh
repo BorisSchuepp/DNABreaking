@@ -26,8 +26,11 @@ fi
 
 # Iterate over files in the trajectory directory
 echo "Processing files in the Trajectory directory: $TRAJECTORY_DIRECTORY"
-for file in "$TRAJECTORY_DIRECTORY"/*; do
+for file in "$TRAJECTORY_DIRECTORY"/*.xtc; do
   echo "Processing $file"
+  
+  [[ "$filename" =~ ^[01] ]] && continue
+  
   filename=$(basename "$file" .xtc)
   sequence="${filename%%_*}"
 
@@ -41,7 +44,7 @@ for file in "$TRAJECTORY_DIRECTORY"/*; do
   gmx distance -f "$file" -s "${STRUCTURE_DIRECTORY}""${sequence}"/"${filename}".tpr -n TempBaseDist.ndx -oall TempBaseDistances.xvg -select "${arr[@]}"
   gmx distance -f "$file" -s "${STRUCTURE_DIRECTORY}""${sequence}"/"${filename}".tpr -n TempBackboneDist.ndx -oall TempBackboneDistances.xvg -select "${arr2[@]}" -b 20000 > TempBackboneDistances.txt
   # Process the obtained distances
-  python ProcessData.py "$OUTPUT_DIRECTORY" "$filename"
+  python ProcessData.py "$OUTPUT_DIRECTORY" "$filename" "65"
 
   # Cleanup temporary files
   rm Temp*

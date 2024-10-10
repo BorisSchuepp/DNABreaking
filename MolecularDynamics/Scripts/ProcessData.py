@@ -56,14 +56,14 @@ def get_time_average(cutoff, input_list):
     return average
 
 
-def process_end_to_end_distances(out_put_dir_in, out_put_name_in):
+def process_end_to_end_distances(out_put_dir_in, out_put_name_in, box_size_in):
     out_str_name = out_put_dir_in + out_put_name_in + "_EndToEndDistance.csv"
     out_str_name_frac = out_put_dir_in + out_put_name_in + "_EndToEndDistance_frac.csv"
 
     out_file = open(out_str_name, "w")
     out_file_frac = open(out_str_name_frac, "w")
 
-    box_size = 65
+    box_size = box_size_in
     file = "TempEndToEndDistances.xvg"
     data_x, data_y = obtain_data(file)
     data_y_corrected = []
@@ -146,6 +146,7 @@ def process_backbone_bond_distances(out_put_dir_in, out_put_name_in):
 if __name__ == "__main__":
     out_put_dir = sys.argv[1]
     out_put_name = sys.argv[2]
-    process_end_to_end_distances(out_put_dir, out_put_name)
+    box_size = int(sys.argv[3])
+    process_end_to_end_distances(out_put_dir, out_put_name, box_size)
     process_base_distances(out_put_dir, out_put_name)
     process_backbone_bond_distances(out_put_dir, out_put_name)
