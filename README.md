@@ -39,7 +39,9 @@ The molecular dynamics subdirectory includes scripts for the following four part
 2. Step-by-step instructions on how the MD simulations have been performed are found in the /MolecularDynamics/SimulationProcedure/ subdirectory. The resutling .xtc files for our dataset can be found on Zenodo.
 3. Data exraction from .xtc trajectories. The script ProcessTrajectories.sh is able to extract relevant bond distances from the trajetories. The script can only be used in a Linux bash terminal mit GROMACS and python3 installed. \
 Use the script by excecuting \
-bash ProcessTrajectories.sh ../RawData/ ../StructureGeneration/InputStructures/ ../ProcessedData/ \
+bash ProcessTrajectories.sh ../RawData/ ../StructureGeneration/InputStructures/ ../ProcessedData/GCContent/ \
+or
+bash ProcessTrajectoriesForceVariation.sh ../RawData/ ../StructureGeneration/InputStructures/ForceVariation/ ../ProcessedData/ForceVariation/
 after saving the .xtc files from Zenodo in the RawData/ subdirectory.
 4. Data analysis and visiualisation: The script DataAnalysis.py will perform in depth analyis on the data obtained in the previous step and can be run in any standard python3 distribution. Note, that this is very hardcoded to our dataset and likely won't be usefull on different MD data. 
 
