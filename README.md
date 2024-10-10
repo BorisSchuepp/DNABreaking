@@ -42,9 +42,8 @@ Use the script by excecuting \
 bash ProcessTrajectories.sh ../RawData/ ../StructureGeneration/InputStructures/ ../ProcessedData/GCContent/ \
 or
 bash ProcessTrajectoriesForceVariation.sh ../RawData/ ../StructureGeneration/InputStructures/ ../ProcessedData/ForceVariation/
-
 after saving the .xtc files from Zenodo in the RawData/ subdirectory.
-5. Data analysis and visiualisation: The script DataAnalysis.py will perform in depth analyis on the data obtained in the previous step and can be run in any standard python3 distribution. Note, that this is very hardcoded to our dataset and likely won't be usefull on different MD data. 
+4. Data analysis and visiualisation: The script DataAnalysis.py will perform in depth analyis on the data obtained in the previous step and can be run in any standard python3 distribution. Note, that this is very hardcoded to our dataset and likely won't be usefull on different MD data. 
 
 # Questions
 For any questions regarding the provided software please contact Boris N. Schüpp (boris.schuepp@mtl.maxplanckschools.de).
