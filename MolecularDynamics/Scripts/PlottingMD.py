@@ -35,6 +35,164 @@ class PlottingMD:
         plt.rcParams['mathtext.bf'] = f'{self.font}:italic:bold'
         plt.rcParams['axes.linewidth'] = 2
 
+    def plot_base_pair_distances_all_force_variation(self, data_dict_in, save_path=None):
+        sequences = set([key[0] for key in data_dict_in.keys() if key[2] != -1])
+        sequences = sorted(sequences)
+        sequences_final = [i for i in sequences if len(i) == 3]
+        sequences_final += [i for i in sequences if len(i) == 2]
+        fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+        x_values = [i for i in range(-49, 51)]
+        for sequence_id, sequence in enumerate(sequences_final):
+            row = int(sequence_id / 3)
+            col = int(sequence_id % 3)
+            for key in data_dict_in.keys():
+                if key[0] != sequence:
+                    continue
+
+                if key[2] == -1:
+                    alpha = 1
+                    width = 2.5
+                else:
+                    alpha = 0.2
+                    width = 1
+
+                if key[1] == 0:
+                    color = self.colors["Teal"]
+                else:
+                    color = self.colors["704"]
+
+                axs[row, col].plot(x_values, data_dict_in[key], color=color, alpha=alpha)
+                axs[row, col].set_title(sequence[0] + "." + sequence[1] + " nN",
+                                        fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+        x_tick = 0
+        x_ticks = [-40, -20, 0, 20, 40]
+        x_tick_labels = ["-40", "-20", "0", "+20", "+40"]
+
+        for ax_ix, ax in enumerate(axs.flatten()):
+            ax.set_ylabel(f"Average basepair distance [nm]",
+                          fontname=self.font, weight=self.font_weight, size=self.font_size + 5)
+            ax.set_xlabel(f"Relative base index",
+                          fontname=self.font, weight=self.font_weight, size=self.font_size + 5)
+            ax.set_xticks(x_ticks)
+            y_tick_labels = ax.get_yticklabels()
+            ax.set_xticklabels(x_tick_labels,
+                               fontname=self.font, weight=self.font_weight, size=self.font_size)
+            for label in ax.get_yticklabels():
+                label.set_fontproperties(self.font)
+                label.set_fontsize(self.font_size)
+                label.set_fontweight(self.font_weight)
+            ax.tick_params(width=2)
+            ax.axhline(y=1, color="black", linestyle='--', linewidth=2.5)
+            ax.set_xlim(-41, 41)
+        plt.tight_layout()
+
+        if save_path:
+            plt.savefig(save_path)
+            plt.clf()
+        else:
+            plt.show()
+        plt.close()
+
+    def plot_force_bond_type_all_force_variation(self, forces_dict_in, save_path=None):
+        sequences_final = ["05", "10", "15", "20", "25", "30"]
+        fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+        for sequence_id, sequence in enumerate(sequences_final):
+            row = int(sequence_id / 3)
+            col = int(sequence_id % 3)
+            for key in forces_dict_in.keys():
+                if key[0] != sequence or key[2] != -1 or key[1] != 1:
+                    continue
+                axs[row, col].plot([i - 50 for i in forces_dict_in[key][0]], forces_dict_in[key][1],
+                                   label=key[3], linewidth=2.5, color=self.colors[key[3]])
+                title = sequence[0] + "." + sequence[1] + " nN"
+                axs[row, col].set_title(title,
+                                        fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+        x_tick = 0
+        x_ticks = [-40, -20, 0, 20, 40]
+        x_tick_labels = ["-40", "-20", "0", "+20", "+40"]
+
+        for ax_ix, ax in enumerate(axs.flatten()):
+            ax.set_ylabel(f"Average force [nN]",
+                          fontname=self.font, weight=self.font_weight, size=self.font_size + 5)
+            ax.set_xlabel(f"Relative base index",
+                          fontname=self.font, weight=self.font_weight, size=self.font_size + 5)
+            ax.set_xticks(x_ticks)
+            y_tick_labels = ax.get_yticklabels()
+            ax.set_xticklabels(x_tick_labels,
+                               fontname=self.font, weight=self.font_weight, size=self.font_size)
+            for label in ax.get_yticklabels():
+                label.set_fontproperties(self.font)
+                label.set_fontsize(self.font_size)
+                label.set_fontweight(self.font_weight)
+            ax.tick_params(width=2)
+            ax.axvline(x=0, color='black', linestyle='--', linewidth=2.5)
+            ax.set_xlim(-41, 41)
+        plt.tight_layout()
+        plt.legend()
+        if save_path:
+            plt.savefig(save_path)
+            plt.clf()
+        else:
+            plt.show()
+        plt.close()
+
+    def plot_end_to_end_distance_all_force_variation(self, data_dict_in, x_data_in, save_path=None):
+        sequences = set([key[0] for key in data_dict_in.keys() if key[2] != -1])
+        sequences_final = sorted(sequences)
+
+        fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+
+        for sequence_id, sequence in enumerate(sequences_final):
+            row = int(sequence_id / 3)
+            col = int(sequence_id % 3)
+            for key in data_dict_in.keys():
+                if key[0] != sequence:
+                    continue
+
+                if key[2] == -1:
+                    alpha = 1
+                    width = 2.5
+                else:
+                    alpha = 0.2
+                    width = 1
+                if key[1] == 0:
+                    color = self.colors["Teal"]
+                else:
+                    color = self.colors["704"]
+                axs[row, col].plot(x_data_in[0:len(data_dict_in[key])], data_dict_in[key],
+                                   color=color, alpha=alpha, linewidth=width)
+                axs[row, col].set_title(sequence[0] + "." + sequence[1] + " nN",
+                                        fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+        x_tick = 0
+        x_ticks = []
+        max_x = x_data_in[-1]
+
+        while x_tick * 20 <= max_x:
+            x_ticks.append(x_tick * 20)
+            x_tick += 1
+        y_ticks = [round(1 + 0.2 * i, 2) for i in range(0, 8)]
+        for ax in axs.flatten():
+            ax.set_ylabel(f"Fractional extension",
+                          fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+            ax.set_xlabel(f"Simulation time [ns]",
+                          fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+            ax.set_xticks(x_ticks)
+            ax.set_yticks(y_ticks)
+            ax.set_xticklabels([str(i) for i in x_ticks],
+                               fontname=self.font, weight=self.font_weight, size=self.font_size)
+            ax.set_yticklabels([str(i) for i in y_ticks],
+                               fontname=self.font, weight=self.font_weight, size=self.font_size)
+            ax.tick_params(width=2)
+            ax.set_ylim(1, 2.5)
+        plt.tight_layout()
+
+        if save_path:
+            plt.savefig(save_path)
+            plt.clf()
+        else:
+            plt.show()
+        plt.close()
+
     def plot_end_to_end_distance_all(self, data_dict_in, x_data_in, save_path=None):
         sequences = set([key[0] for key in data_dict_in.keys() if key[2] != -1])
         sequences = sorted(sequences)
@@ -286,6 +444,67 @@ class PlottingMD:
         else:
             plt.show()
             plt.clf()
+        plt.close()
+
+    def plot_fraying_force_variation(self, in_1, in_2, in_3, in_4, in_5, in_6, description, save_path=None):
+
+        plt.figure(figsize=(7, 7))
+        plt.scatter([0.5 for _ in range(0, len(in_1))], in_1, color=self.colors["P-O5'"], alpha=0.3, marker="o",
+                    s=self.marker_size, edgecolor='black', linewidth=1.5)
+        plt.scatter(0.5, sum(in_1) / len(in_1), color=self.colors["P-O5'"], alpha=1, marker="*", s=self.marker_size,
+                    edgecolor='black', linewidth=1.5)
+
+        plt.scatter([1 for _ in range(0, len(in_2))], in_2, color="orange", alpha=0.3, marker="o",
+                    s=self.marker_size, edgecolor='black', linewidth=1.5)
+        plt.scatter(1, sum(in_2) / len(in_2), color="orange", alpha=1, marker="*", s=self.marker_size,
+                    edgecolor='black', linewidth=1.5)
+
+        plt.scatter([1.5 for _ in range(0, len(in_3))], in_3, color="blue", alpha=0.3, marker="o",
+                    s=self.marker_size, edgecolor='black', linewidth=1.5)
+        plt.scatter(1.5, sum(in_3) / len(in_3), color="blue", alpha=1, marker="*", s=self.marker_size,
+                    edgecolor='black', linewidth=1.5)
+
+        plt.scatter([2 for _ in range(0, len(in_4))], in_4, color="yellow", alpha=0.3, marker="o",
+                    s=self.marker_size, edgecolor='black', linewidth=1.5)
+        plt.scatter(2, sum(in_4) / len(in_4), color="yellow", alpha=1, marker="*", s=self.marker_size,
+                    edgecolor='black', linewidth=1.5)
+
+        plt.scatter([2.5 for _ in range(0, len(in_5))], in_5, color=self.colors["O3'-P"], alpha=0.3, marker="o",
+                    s=self.marker_size, edgecolor='black', linewidth=1.5)
+        plt.scatter(2.5, sum(in_5) / len(in_5), color=self.colors["O3'-P"], alpha=1, marker="*", s=self.marker_size,
+                    edgecolor='black', linewidth=1.5)
+
+        plt.scatter([3 for _ in range(0, len(in_6))], in_6, color=self.colors["GC"], alpha=0.3, marker="o",
+                    s=self.marker_size, edgecolor='black', linewidth=1.5)
+        plt.scatter(3, sum(in_6) / len(in_6), color=self.colors["GC"], alpha=1, marker="*", s=self.marker_size,
+                    edgecolor='black', linewidth=1.5)
+
+        plt.xticks([i * 1 for i in [0.5, 1, 1.5, 2, 2.5, 3]], ["0.5", "1.0", "1.5", "2.0", "2.5", "3.0"],
+                   weight=self.font_weight, fontname=self.font, size=self.font_size)
+        plt.yticks(weight=self.font_weight, fontname=self.font, size=self.font_size)
+        plt.xlabel("Force [nN]", fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+        if description == "Left":
+            plt.ylabel("Fraying start base index (left)",
+                       fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+            plt.ylim(18, 53)
+        if description == "Right":
+            plt.ylabel("Fraying end base index (right)",
+                       fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+            plt.ylim(50, 80)
+        if description == "Width":
+            plt.ylabel("Fraying width",
+                       fontname=self.font, weight=self.font_weight, size=self.font_size + 10)
+            plt.yticks([0, 10, 20, 30, 40, 50, 60],
+                       weight=self.font_weight, fontname=self.font, size=self.font_size)
+            plt.ylim(-1, 62)
+
+        plt.tight_layout()
+        plt.tick_params(width=3)
+        if not save_path:
+            plt.show()
+            plt.clf()
+        else:
+            plt.savefig(save_path)
         plt.close()
 
     def plot_fraying(self, in_gc, in_704, in_at, description, save_path=None):

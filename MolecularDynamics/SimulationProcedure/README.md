@@ -23,5 +23,6 @@ where i is a counter indicating the i-th rerun of the simulation
 
 The .mdp files have been adapted from http://www.mdtutorials.com/gmx/lysozyme/index.html and are provided in this directory\
 The scripts to run the simulations are also provided here. Run input files for the pulling simulations can be found in StructureGeneration/InputStructrues/ as .tpr files. \
-The resulting trajectories can be obtained from Zenodo as .xtc files with the names {Sequence}\_{Nick-Type}_{Rerun counter}.xtc
+The resulting trajectories can be obtained from Zenodo as .xtc files with the names {Sequence}\_{Nick-Type}_{Rerun counter}.xtc. For the simulations under different forces
+the pull.mdp has been changed in the pull-coord1-k and pull-coord2-k field.
 
